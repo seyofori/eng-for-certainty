@@ -24,6 +24,7 @@ Apply this skill to:
 - Configure resource metadata, privacy policy, exporters, sampling, and health centrally while preserving signal-specific contracts.
 - Send logs and audits through typed event schemas, metrics through named instruments with bounded attributes, and traces through an approved tracer provider, instrumentation, processors, and exporters.
 - Inject the logger, tracer, meter, or a narrow signal-specific facade into services and repositories; do not import hidden telemetry singletons into domain code.
+- When a bespoke logger, tracer, or facade object is hand-built for a script, CLI, or test harness instead of using the shared implementation, verify it forwards every parameter its declared interface accepts. A structurally-typed shim can satisfy an interface while silently discarding an argument, dropping all structured context from every call site that relies on it.
 - Accept typed Safe Log Events, not arbitrary context bags, raw request objects, raw errors, or spread objects. Give metrics and manual spans explicit allowlisted attribute contracts.
 - Define a closed schema per event family. Reject unknown keys and bound every accepted string, array, nesting level, and payload size before forwarding.
 - Keep logging out of business transactions and critical request completion. Logging failure must not change a successful business outcome unless the event is an explicitly authoritative audit requirement.

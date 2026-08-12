@@ -101,6 +101,8 @@ Honor an explicit user effort level. Otherwise scale effort by change risk, not 
 
 Increase effort for privilege boundaries, irreversible writes, migrations, public contracts, concurrency, financial or sensitive data, core workflows, and weak test coverage. State the chosen effort and reviewed scope in the final response.
 
+At High or Max effort on a multi-file change, enumerate every changed file that is not generated, vendored, or a binary asset, and confirm each received at least an Angle A and Angle B pass before candidate-gathering is called complete. Do not let a large new module absorb review depth at the expense of smaller adjacent files in the same diff — a five-line configuration or deployment change fails exactly as often as a five-hundred-line new module, and gets less scrutiny by default.
+
 ## Phase 1: Find Candidate Issues
 
 Treat every observation as a candidate, not a finding. Run each relevant angle independently so one framing does not suppress another.
@@ -127,6 +129,7 @@ For each changed exported function, endpoint, event, schema, database shape, err
 - Compare old and new preconditions, return shapes, nullability, error behavior, timing, and side effects.
 - Check sibling implementations for inconsistent updates.
 - Check whether tests exercise the real integration boundary.
+- For a changed environment or configuration schema, also trace it to every deployment manifest that assigns those variables: CI/CD workflow files, Compose/Kubernetes manifests, and other infrastructure-as-code. Confirm each supported deployment-environment value has at least one config value that satisfies the schema; a refinement that rejects every legal value under one environment is a boot-breaking defect, not a style issue. Separately check whether a manifest's variable-substitution syntax (for example `${VAR:-}`) can produce an empty string when a variable is merely unset — most schema validators treat an empty string differently from an absent one.
 
 ### D. Security and authorization
 
@@ -135,6 +138,8 @@ Inspect trust boundaries, authentication, authorization, tenant isolation, input
 ### E. Data integrity and persistence
 
 Inspect schemas, migrations, transactions, uniqueness, foreign keys, destructive writes, partial updates, backfills, ordering, serialization, precision, compatibility, and rollback behavior. Look for durable corruption or loss paths as well as immediate failures.
+
+For operational or administrative tooling (migration, rotation, cleanup, or batch scripts) that accepts a caller-supplied scope and loops until a completion condition, verify the scope's existence is checked before the loop starts, or that "no matching target" is distinguished from "target already complete" in the result and exit status. Otherwise an invalid scope (a typo'd ID, a wrong key) silently reports false success against live data instead of failing loudly.
 
 ### F. Reliability and concurrency
 
@@ -214,6 +219,8 @@ Use these verdicts:
 - **CONDITIONAL**: The failure is realistic but depends on a clearly stated environment, state, workload, or product assumption.
 - **REFUTED**: Cited evidence proves the path is guarded, impossible, already handled in the change, or immaterial. Drop it.
 - **NEEDS_CONTEXT**: Required product or operational context cannot be recovered. Ask or list it as an open question; do not present it as a finding.
+
+Before finalizing a `CONDITIONAL` verdict, check for in-repo evidence that already resolves the stated assumption — integration or sandbox documentation, fixtures, existing tests, or configuration defaults describing the real current environment or upstream behavior. If that evidence shows the assumption already holds today, reclassify the candidate as `CONFIRMED` instead of leaving it `CONDITIONAL`.
 
 Route uncertainty before assigning `NEEDS_CONTEXT`:
 
