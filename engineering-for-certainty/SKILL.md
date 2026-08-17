@@ -134,6 +134,7 @@ Use explicit version-control semantics so project history communicates intent an
 
 - Default to implementing every branch in its own dedicated git worktree, not the shared checkout, even for a single-threaded issue with no parallel workstreams.
 - Skip the worktree only when the user has explicitly said this work should happen without one. A convenience preference from the agent is not authorization.
+- Branch the worktree from the remote default branch, such as `origin/main`, not from local `HEAD`, so implementation starts from the canonical up-to-date base rather than whatever the shared checkout happens to have checked out. Use local `HEAD` as the base only when the user explicitly directs it.
 - Record the full worktree path alongside the branch name before implementation begins, and record the exception explicitly when the user opted out.
 
 ### Semantic Versioning

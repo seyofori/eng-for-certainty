@@ -95,7 +95,7 @@ Require each slice to record its exact conventional Branch Contract before imple
 
 Preserve a platform-required prefix such as `codex/`. The type and stable issue number must agree with the issue filename. A branch suggestion or pattern without the resolved name does not pass.
 
-Record the full path to the worktree where the slice's work will happen alongside its Branch Contract. Default every slice to its own dedicated worktree; omit the path only when the user has explicitly said this slice's work should happen without one, and record that direction instead of the path.
+Record the full path to the worktree where the slice's work will happen alongside its Branch Contract. Default every slice to its own dedicated worktree branched from the remote default branch (for example `origin/main`), not local `HEAD`; omit the path only when the user has explicitly said this slice's work should happen without one, and record that direction, and any explicit override of the base ref, instead of the default.
 
 Use Stacked Pull Requests only for real dependencies. Record each PR's head, base, preceding PR, merge order, and rebase or retarget procedure. Independent slices must share the canonical base branch and remain parallel rather than being forced into a stack.
 
