@@ -9,8 +9,8 @@ The smallest issue that is independently implementable, testable, and reviewable
 _Avoid_: Micro-task, smallest possible task
 
 **Branch Contract**:
-The exact implementation branch name recorded by an issue before implementation begins.
-_Avoid_: Suggested branch, branch hint
+The exact implementation branch name and full worktree path recorded by an issue before implementation begins, defaulting to a dedicated worktree unless the user has explicitly directed that this work happen without one.
+_Avoid_: Suggested branch, branch hint, implied working directory
 
 **Issue Completion Record**:
 The durable evidence written to the canonical issue by the implementation or integration agent after final review and before the issue is marked done. It records the final status, completion date, affected surfaces, reconciled traceability evidence, validation results, review outcome, deviations, residual risks, deferred checks, and available branch, commit, or pull-request references.
@@ -134,7 +134,7 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - "PR review" and "code review" were used interchangeably - resolved: **Code Review** owns analysis, while **Pull Request Review** owns GitHub adjudication and publication.
 - `code-review-dexwin` appeared to name a separate skill - resolved: it is the engineering server alias for **Code Review**, not an independent review contract.
 - "Stacked" was used as a synonym for parallel issue work - resolved: a **Stacked Pull Request** has an explicit dependency, while independent pull requests share the canonical base.
-- "Clean subagent" was used as a worktree requirement - resolved: a reviewer needs a **Clean Review Context**; separate worktrees are required only for concurrent writes that need filesystem isolation.
+- "Clean subagent" was used as a worktree requirement - resolved: a reviewer needs a **Clean Review Context**, which does not itself require a worktree; every **Branch Contract** still defaults to its own worktree for implementation, and skips one only when the user explicitly says so.
 - "Final worktree" was used as though worktrees themselves are merged - resolved: commits from **Helper Branches** are integrated into the **Canonical Integration Branch**; files are never copied between worktrees as the integration mechanism.
 - "Draft PR" was treated as the default publication result - resolved: **Pull Request Readiness** determines the state, and verified completed work produces a pull request ready for review.
 - `pending-review` was treated as a formal workflow-status category - resolved: **Pending Review** is a reviewer-attention signal applied after corrections and evidence are ready for another look.

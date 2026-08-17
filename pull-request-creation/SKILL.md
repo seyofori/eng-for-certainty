@@ -14,7 +14,7 @@ Do not implement missing work, perform code review, repair CI, invent evidence, 
 Resolve and read:
 
 - the canonical issue or implementation handoff;
-- its stable issue number and exact Branch Contract;
+- its stable issue number and exact Branch Contract, including the recorded worktree path or the user's explicit direction to skip one;
 - the repository's branch, commit, PR-title, PR-template, and release conventions;
 - the intended base branch or preceding stacked-PR branch;
 - the complete local diff, commits, untracked files, and validation evidence;
@@ -41,6 +41,8 @@ codex/<type>/<NN>-<short-kebab-description>
 ```
 
 If completed changes are still on the default branch, create the recorded branch before committing when that safely preserves the current work. If the current non-default branch conflicts with the Branch Contract, stop rather than silently publishing under another identity.
+
+If the Branch Contract records a dedicated worktree path and the completed work instead lives in the shared checkout without an explicit user direction to skip the worktree, treat that as a Branch Contract deviation: stop and reconcile it with the user before publishing.
 
 Inspect every changed and untracked file. Reject unrelated work, unexplained generated artifacts, accidental binaries, stale planning changes, or ambiguous ownership. Never default to staging an entire mixed worktree.
 

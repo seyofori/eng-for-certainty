@@ -95,6 +95,8 @@ Require each slice to record its exact conventional Branch Contract before imple
 
 Preserve a platform-required prefix such as `codex/`. The type and stable issue number must agree with the issue filename. A branch suggestion or pattern without the resolved name does not pass.
 
+Record the full path to the worktree where the slice's work will happen alongside its Branch Contract. Default every slice to its own dedicated worktree; omit the path only when the user has explicitly said this slice's work should happen without one, and record that direction instead of the path.
+
 Use Stacked Pull Requests only for real dependencies. Record each PR's head, base, preceding PR, merge order, and rebase or retarget procedure. Independent slices must share the canonical base branch and remain parallel rather than being forced into a stack.
 
 ## Claim Verification
@@ -303,7 +305,7 @@ Apply only when the issue scope triggers them. Use repo-specific docs and existi
 For non-trivial issues, include an Execution Plan that identifies which workstreams are independent and which are ordered. Use subagents in parallel only when their production ownership and traceability rows do not overlap materially.
 
 - Give each implementation subagent bounded files or symbols, acceptance criteria, and validation responsibility.
-- Use a Helper Branch in a separate worktree for concurrent writes that require filesystem isolation. A clean review context does not itself require a worktree.
+- Give each Helper Branch its own worktree by default, the same as any other Branch Contract; concurrent workstreams need it for filesystem isolation, and a single-threaded implementation defaults to one too. Skip the worktree only when the user explicitly authorized working directly in the current checkout, and record that exception. A Clean Review Context does not itself require a worktree.
 - Name one Canonical Integration Branch from the issue's Branch Contract. The Execution Plan must name how each Helper Branch enters it: cherry-pick coherent commits, merge the branch, or rebase and fast-forward according to repository history conventions. Never copy files between worktrees as the integration mechanism.
 - Validate each helper branch, then integrate in dependency order. Resolve conflicts only on the canonical branch and re-run every affected traceability row.
 - Run the complete triggered validation and issue-against-diff audit on the combined canonical branch.
@@ -336,7 +338,7 @@ Before editing, verify:
 
 - **Consistency**: acceptance criteria, scope, dependencies, implementation guardrails, and affected production owners agree; paths, symbols, and line references still exist.
 - **Issue identity**: pending issue filenames follow the discovered convention, use a stable number and valid Conventional Commit type, and all roadmap/index and sibling references resolve after any rename.
-- **Decomposition and branches**: the issue is one proven Smallest Coherent Slice or an ordered child pack; every slice has an exact Branch Contract, and only genuinely dependent PRs are stacked.
+- **Decomposition and branches**: the issue is one proven Smallest Coherent Slice or an ordered child pack; every slice has an exact Branch Contract naming its worktree path (or the user's explicit direction to skip one), and only genuinely dependent PRs are stacked.
 - **Traceability**: every independently observable criterion has one or more ledger rows with an exact production owner and exact test or justified manual verification; the post-implementation audit is named.
 - **Contracts**: auth, trust boundaries, schemas, events, migrations, error mappings, and expected-failure behavior match repo conventions; coded errors include the complete matrix and invalid-envelope behavior.
 - **Triggered doctrine**: apply the relevant observability, resilience, auth/security, and frontend requirements, including async transition tables and literal platform mechanisms when applicable.
@@ -362,6 +364,7 @@ Status: open
 Type: Bug | Feature | Chore | Exploration
 Severity: High | Medium | Low | Very Low
 Branch: <exact conventional branch>
+Worktree: <full path to the dedicated implementation worktree, or "none — user directed no worktree">
 Parent: <parent issue, when this is a child slice>
 
 ## Problem / Motivation

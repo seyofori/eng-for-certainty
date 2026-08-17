@@ -130,6 +130,12 @@ Use explicit version-control semantics so project history communicates intent an
 - When a change mixes unrelated intents, split the work instead of using a vague branch such as `misc` or `updates`.
 - For Codex-created branches, preserve the platform-required prefix when present, then apply the conventional name after it, such as `codex/fix/token-expiry`.
 
+### Worktree Isolation
+
+- Default to implementing every branch in its own dedicated git worktree, not the shared checkout, even for a single-threaded issue with no parallel workstreams.
+- Skip the worktree only when the user has explicitly said this work should happen without one. A convenience preference from the agent is not authorization.
+- Record the full worktree path alongside the branch name before implementation begins, and record the exception explicitly when the user opted out.
+
 ### Semantic Versioning
 
 - For packages, public APIs, plugins, CLIs, schemas, SDKs, and shared contracts, follow SemVer unless the repo has a documented alternative.
