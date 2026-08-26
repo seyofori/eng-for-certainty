@@ -39,6 +39,8 @@ Before changing code, verify that the canonical issue:
 - is one Smallest Coherent Slice;
 - names its exact Branch Contract, pull-request base, and worktree mode;
 - contains testable acceptance criteria and a complete traceability ledger;
+- contains a complete Runtime Acceptance Plan for observable runtime changes,
+  or a justified `Not applicable` entry for non-runtime work;
 - states implementation change-control boundaries;
 - defines semantic review checkpoints when the slice is substantial, or
   explicitly states that the issue is small enough to use one delivery unit;
@@ -130,8 +132,25 @@ Run every applicable traceability row against the combined canonical branch.
 Run formatting, linting, unit, integration, E2E, migration, mutation, security,
 accessibility, or manual proof required by the issue and triggered doctrine.
 
+After applicable automated validation passes, execute the issue's Runtime
+Acceptance Plan using `$engineering-for-certainty`'s Runtime Acceptance Pass
+contract. Run the local scenarios against the final combined candidate through
+the real external boundary, including the primary journey and exploratory check.
+Use the triggered frontend, auth/security, and observability doctrine for design
+comparison, Test Identity Plans, disposable inboxes, Test Message Sinks, and
+secret-free evidence.
+
+Run preview or staging scenarios when that environment safely exposes the exact
+candidate and deployment is already automated or separately authorized. This
+workflow does not authorize deployment by itself. If the environment appears
+only after pull-request creation, keep the issue `Needs Verification`, create or
+update only the draft state permitted by `$pull-request-creation`, and run the
+pending scenarios when the environment becomes available. Record post-merge-only
+staging proof as a downstream release gate with its owner and trigger.
+
 Distinguish commands actually run from recommended or remote-only checks. Keep
-the issue at `Needs Verification` while issue-owned proof is missing.
+the issue at `Needs Verification` while issue-owned proof is missing, failed, or
+stale. Tie every runtime result to the exact local commit or deployed build.
 
 ### 4. Run Final Full Integration Review
 
@@ -161,6 +180,10 @@ Route every verified review result through the issue's Review Loop Contract:
   is missing; or when reviewers materially disagree.
 - **BLOCKED**: stop when safe correction requires missing authority, access,
   credentials, external state, or a prerequisite outside the issue.
+- **RESIDUAL_RISK**: record the unresolved assumption without changing the
+  implementation. For checkpoint advancement, return `CLEAN` only when the
+  issue explicitly permits the risk and it does not weaken acceptance or
+  highest-risk proof; otherwise return `USER_DECISION`.
 
 Apply all independent `AUTO_CORRECT` findings as one coherent correction batch
 where practical. Preserve the original finding IDs and record each disposition.
@@ -172,6 +195,9 @@ recommendation. Do not reinterpret a pause as permission to choose silently.
 After a correction batch:
 
 1. Re-run the tests and proof invalidated by the corrections.
+   This includes every Runtime Acceptance scenario the changed production,
+   dependency, runtime-configuration, deployment, or test-data surface could
+   affect.
 2. Run a clean `$code-review` pass against the new head.
 3. Re-verify prior findings and inspect the complete resulting diff for
    regressions or new issues.
@@ -191,8 +217,10 @@ head.
 Update the canonical issue's Issue Completion Record with the actual diff,
 traceability outcomes, validation, checkpoint IDs and accepted head SHAs,
 checkpoint and final-review results, finding dispositions, deviations, residual
-risks, branch, and commit references. Keep the record concise and keep the
-status truthful when remote evidence is still pending.
+risks, Runtime Acceptance scenario ledger and environment/build identities,
+design comparison and proxy blind spots when applicable, branch, and commit
+references. Keep the record concise and keep the status truthful when remote
+evidence is still pending.
 
 ### 8. Create Or Update The Pull Request
 
@@ -203,6 +231,12 @@ bypass a publication stop condition from inside this composing skill.
 ### 9. Follow CI To A Terminal State
 
 Monitor every required automated check for the current PR head.
+
+When pull-request automation creates a required preview environment, run the
+pending Runtime Acceptance scenarios against the deployed head, update the Issue
+Completion Record, obtain an independent `$code-review` audit of the new runtime
+evidence, and invoke `$pull-request-creation` again to reconcile draft or ready
+state.
 
 - For an attributable in-scope failure, diagnose it, apply the smallest
   authorized correction, run affected local proof, commit and push, then return
@@ -232,6 +266,9 @@ Declare delivery complete only when:
   decision;
 - the current PR head satisfies every approved acceptance criterion;
 - every issue-owned validation and highest-risk verification gate has evidence;
+- every required issue-owned Runtime Acceptance scenario passed against the
+  exact current candidate, and every post-merge-only pass is linked as a
+  downstream release gate with an owner and trigger;
 - the current head has passed independent `$code-review`;
 - every confirmed finding has a recorded disposition and no unresolved blocker
   remains;

@@ -76,6 +76,10 @@ Use one `checkpoint_result`:
 - `USER_DECISION`
 - `BLOCKED`
 
+`RESIDUAL_RISK` is a finding route, not a valid `checkpoint_result`. A permitted
+residual risk is recorded under `residual_risks` and may coexist with `CLEAN`;
+an unpermitted residual risk produces `USER_DECISION`.
+
 `CLEAN` requires:
 
 - no unresolved `CONFIRMED` finding;

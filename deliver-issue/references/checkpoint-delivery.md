@@ -55,6 +55,9 @@ Advance only when:
 `AUTO_CORRECT` returns to the same checkpoint. `USER_DECISION` and `BLOCKED`
 pause delivery and leave any durable goal incomplete.
 
+`RESIDUAL_RISK` remains a finding route. Record a permitted residual risk and
+return `CLEAN`; return `USER_DECISION` when the issue does not permit it.
+
 The existence of a goal never permits advancement, finding suppression,
 severity reduction, weakened proof, or silent selection of product meaning.
 

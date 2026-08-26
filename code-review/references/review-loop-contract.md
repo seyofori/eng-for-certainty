@@ -101,9 +101,10 @@ When the review targets a delivery checkpoint:
 - `USER_DECISION` pauses for user adjudication.
 - `BLOCKED` pauses for the named authority, access, credential, skill, external
   state, or prerequisite.
-- `RESIDUAL_RISK` permits advancement only when the governing issue explicitly
+- A finding routed `RESIDUAL_RISK` does not create a fifth checkpoint result.
+  It permits a `CLEAN` result only when the governing issue explicitly
   classifies the assumption as non-blocking and it does not weaken acceptance
-  or highest-risk proof.
+  or highest-risk proof. Otherwise the checkpoint result is `USER_DECISION`.
 
 Do not advance with an unresolved confirmed finding. Do not infer advancement
 authority from a durable goal, completion target, deadline, or general request

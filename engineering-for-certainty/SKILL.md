@@ -353,6 +353,22 @@ Apply testing rules in this order: critical behavior correctness first, then fai
 - Structural migrations must preserve behavior and prove that with tests.
 - Keep test structure aligned with the real module structure.
 
+### Runtime Acceptance
+
+Every change with observable runtime behaviour requires a Runtime Acceptance
+Pass after automated validation. Read and follow
+[Runtime Acceptance Pass](references/runtime-acceptance.md) when this applies.
+The pass must exercise the assembled running system through its real external
+boundary, cover every accepted observable outcome plus one complete primary
+journey and targeted exploration, and leave revision-specific evidence. A
+non-runtime issue may record `Not applicable` only with a concrete reason.
+
+Run the pass locally before pull-request readiness. Repeat it against preview or
+staging when that environment safely exposes the exact pre-merge candidate and
+deployment is authorized. Treat post-merge-only staging proof as an explicit
+downstream release gate. Re-run every scenario invalidated by a later change and
+keep the work unverified while required issue-owned proof is missing or stale.
+
 ### Database Migration Proof
 
 - Every database schema or data migration requires a dedicated Migration Proof Harness: an isolated disposable local database container or containerized test service that cannot target a shared or production database.
@@ -447,6 +463,9 @@ Before declaring work complete, verify:
 - Config is injected rather than read from globals inside business logic.
 - Returned data is validated at the boundary before it is sent back out.
 - Tests cover the new behavior, validation, and error variants.
+- Observable runtime behaviour passed the required local and available
+  authorized preview or staging Runtime Acceptance Pass against the exact
+  candidate, or the issue remains truthfully unverified.
 - Relevant companion skills were applied when work touched observability, resilience, auth/security, or frontend engineering/accessibility.
 - New shared contracts or logic live in shared packages/modules when used across boundaries.
 - Imports follow the repository's established aliases instead of brittle deep
@@ -486,6 +505,8 @@ Before declaring work complete, record the smallest useful evidence packet:
 - user-owned decisions accepted during the work
 - empirical investigations performed and their results
 - exact validation commands and outcomes
+- Runtime Acceptance scenario results, exact revision and environment, stale or
+  deferred scenarios, and downstream release-gate owners or triggers
 - companion skills triggered and the checks they added
 - deviations from plan or doctrine, with reasons
 - residual risks, limitations, and anything still unverified

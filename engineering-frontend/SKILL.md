@@ -1,6 +1,6 @@
 ---
 name: engineering-frontend
-description: Frontend engineering doctrine for web/mobile architecture, API integration, forms, accessibility, operational telemetry and tracing, and testing. Use with engineering-for-certainty when work touches frontend modules, routes/screens, API adapters, hooks, flows/views, TanStack Query/Form, accessibility, client telemetry, or web/mobile unit/E2E coverage.
+description: Frontend engineering doctrine for web/mobile architecture, API integration, forms, accessibility, design conformance, operational telemetry and tracing, runtime acceptance, and testing. Use with engineering-for-certainty when work touches frontend modules, routes/screens, API adapters, hooks, flows/views, TanStack Query/Form, accessibility, design-backed UI, client telemetry, or web/mobile unit/E2E coverage.
 ---
 
 # Engineering Frontend
@@ -18,6 +18,7 @@ Apply this skill when the work includes:
 - web component, flow, or hook testing
 - mobile component, screen, or hook testing
 - frontend accessibility requirements
+- frontend Runtime Acceptance or comparison with an authoritative design
 - frontend operational logging, tracing, or telemetry emission
 - Playwright or Maestro test coverage
 - frontend build-sequence changes related to testing
@@ -71,6 +72,55 @@ Navigation loaders and prefetch boundaries may invoke the same query definition 
 - Return the operation's exact error union plus only failures introduced by the adapter itself, such as client-side input validation, transport failure, SDK rejection, or malformed response data.
 - Map transport, SDK, provider, and malformed-response failures to adapter-owned infrastructure variants such as `service_unavailable`; do not attribute them to the remote operation.
 - No `try/catch` in adapters, hooks, or flows for expected failures. Use `Result`/`ResultAsync` and restrict `try/catch` to explicit bridges to throwing libraries.
+
+### Frontend-First API Mocks
+
+When frontend work intentionally precedes backend implementation, build the
+frontend against the intended production operation contracts. Mock only the
+API adapter implementations that would call the backend. Contracts, hooks,
+query and form orchestration, flows, views, components, accessibility behavior,
+and tests must use their production architecture.
+
+Read and follow [Frontend-First API Mocks](references/frontend-first-api-mocks.md)
+for the complete entrypoint, factory, scenario, hook, and flow pattern.
+
+- Define each operation's canonical input, success, and exact failure types
+  before implementing its mock. Reuse the repository's runtime schemas where
+  they exist; do not create wider or frontend-only substitute contracts.
+- Production and mock implementations must satisfy the same exact operation
+  type. Mock controls must not add optional scenario fields or other test-only
+  values to production inputs or return types.
+- Keep `create[Domain]Api`, such as `createOrdersApi`, pure. It receives explicit
+  production or mock options and returns the stable domain API functions; it
+  does not read environment or global configuration.
+- Use a domain API entrypoint, such as `orders.api.ts`, to read validated
+  configuration once, call `create[Domain]Api`, and directly export its API
+  functions. Hooks and other consumers import those functions normally and
+  never receive mock mode or configuration.
+- Match production/mock configuration exhaustively. Production receives the
+  repository's configured low-level API client. Mock mode receives a typed
+  domain scenario.
+- Model each mock operation outcome as a discriminated `success` or `failure`
+  using the operation's exact types, plus an optional delay. Named environment
+  presets map exhaustively to those scenarios; isolated tests pass scenarios
+  directly.
+- Keep mock outcome, scenario, and fixture types in mock-owned modules, outside
+  shared backend contracts and consuming frontend layers.
+- Make scenarios deterministic and cover every contract outcome that produces
+  materially different UI: success, distinct empty states, expected failures,
+  adapter-owned infrastructure failures, meaningful delays, and repeated-call
+  behavior for refreshes, retries, or mutations when the feature actually
+  requires it. Do not add callbacks, sequences, exhaustive value combinations,
+  or randomized defaults pre-emptively.
+- Construct and validate mock outcomes with the canonical runtime schemas or
+  domain factories where applicable. A mock must not make impossible data or
+  failure combinations representable merely for convenience.
+- Do not reproduce HTTP parsing, headers, status codes, malformed payloads, or
+  other transport internals inside the mock adapter. Test those behaviors
+  against the production adapter boundary.
+- Production configuration must default to the production implementation and
+  reject mock mode. Exclude mock modules and fixtures from production bundles
+  when the repository's toolchain supports it.
 
 ## Hooks and Server State
 
@@ -199,6 +249,53 @@ return match(profileState)
 - Preserve accessibility coverage for states that affect navigation, form submission, authentication, checkout or payment, destructive actions, or error recovery.
 - Add accessibility-aware assertions for critical user-visible flows when the local test stack supports them.
 
+## Runtime Acceptance And Design Conformance
+
+For every frontend issue that changes observable runtime behaviour, follow
+`$engineering-for-certainty`'s
+[Runtime Acceptance Pass](../engineering-for-certainty/references/runtime-acceptance.md).
+
+- Use browser control to navigate a running web application through the same
+  routes and controls a user uses. Use computer, emulator, or device control for
+  native or operating-system-dependent interfaces.
+- Exercise every accepted visible outcome, one complete primary journey, and a
+  targeted exploratory check of the changed area and integration seams. Include
+  keyboard, focus, labels, and assistive-technology evidence required by the
+  issue.
+- Check the browser console and failed network requests during each relevant web
+  journey. A visually correct screen with an unexpected console failure or
+  failed request does not pass without a named accepted explanation.
+- Record platform and viewport, actions, visible outcome, console and network
+  result, screenshots when visual proof matters, exact revision and environment,
+  and cleanup without recording personal data or authentication secrets.
+- A browser pass through a mock-backed running frontend may prove an explicitly
+  frontend-only slice only when the issue names the mock adapter as a proxy and
+  records the missing backend integration proof. It does not make the feature
+  end-to-end complete.
+
+When implementation is based on an authoritative design, require a Design
+Conformance Pass:
+
+- Record the exact design file or artifact, version or approved snapshot, frame
+  or node references, target platforms and viewports, designed states, and
+  approved deviations before implementation.
+- Open the exact design during verification. Do not compare from memory.
+- Put the running frontend into the equivalent state with equivalent content and
+  viewport dimensions, then compare side by side or with an overlay when
+  practical.
+- Check layout, spacing, typography, colour, assets, hierarchy, component states,
+  responsive behaviour, and designed interactions. Allow rendering differences
+  only when they do not materially change the accepted design.
+- Compare every state represented by the design. The issue still owns missing
+  loading, empty, error, permission, recovery, and accessibility states; design
+  silence does not remove them.
+- Treat a material mismatch as a failed pass. If the design conflicts with
+  accepted behaviour, the design system, accessibility, or platform conventions,
+  pause for a decision instead of choosing silently or reproducing an
+  accessibility defect.
+- Keep design conformance unverified when the authoritative source or version is
+  inaccessible. Re-run affected comparisons after a change invalidates them.
+
 ## Client Observability
 
 Apply `$engineering-observability` whenever frontend code emits operational telemetry. It owns signal contracts, propagation, ingestion, export, privacy, retention, and capacity; this skill owns where and when meaningful client events and spans begin.
@@ -242,6 +339,8 @@ Do not log component renders, routine effects, keystrokes, form values, every re
 - Mobile E2E tests are mandatory for important user-visible flows when a mobile app exists. Prefer Maestro.
 - Test one-event-per-transition telemetry, deduplication or aggregation, production sampling and debug-event policy, queue bounds and drops, and the absence of PII or raw error objects.
 - When client tracing changes, test origin-allowlisted context propagation, controlled-backend-only span export, client sampling and limits, meaningful span ownership, and the absence of sensitive attributes or baggage.
+- For frontend-first work, test production hooks, flows, views, components, accessibility behavior, and E2E journeys through the mock adapter; do not replace those layers with hook, query-result, flow, or component mocks.
+- Verify that mock adapter scenarios satisfy the exact production operation types and runtime contracts and cover every UI-relevant outcome without impossible states or random defaults.
 - Mirror production file naming. Follow the repo's naming style; otherwise prefer `test()` and given/when/then test bodies.
 
 ## Build Sequence
@@ -258,6 +357,14 @@ For web or mobile features:
 8. Accessibility checks for critical user-visible states and flows.
 9. E2E coverage for important happy-path and failure-path user flows on supported platforms.
 
+When the backend operation is not yet available, complete the sequence through
+the mock adapter and record the production adapter plus live integration proof
+as pending work. The frontend-first slice may be complete when its declared
+frontend behavior and safeguards pass, but the feature is not end-to-end
+complete until the production adapter is connected to the real backend and its
+contract-boundary and live integration tests pass. Mock implementations may
+remain afterward for development and testing.
+
 ## Review
 
 - Routes/pages/screens are thin and render flow/container components.
@@ -265,6 +372,9 @@ For web or mobile features:
 - API calls go through the adapter boundary. No direct `fetch`, `axios`, SDK, or raw client calls leak into components, screens, routes, flows, views, or stores.
 - Requests, success responses, and error responses are validated at the adapter boundary with `.safeParse()`.
 - Endpoint error parsing and mapping use the exact operation contract, remain exhaustive, and do not hide new variants behind a broad domain schema or status-first fallback.
+- In frontend-first work, only backend-calling adapter implementations are mocked. Production and mock implementations satisfy the same exact operation contracts, while every consuming frontend layer follows its production architecture.
+- The default mock seam uses a pure domain-owned `create[Domain]Api` factory and an environment-aware domain API entrypoint, unless the repository has a stronger existing adapter seam. Mock scenarios do not pollute production contracts, consuming layers remain mock-unaware, and production rejects mock mode.
+- Mock scenarios are deterministic, runtime-valid where schemas exist, and cover every UI-relevant contract outcome without simulating transport internals inside the mock adapter.
 - Hooks branch on `Result` values for domain outcomes instead of treating TanStack Query `isError` as the domain failure path.
 - Routes and screens use the repository's router or framework data-loading boundary for initial-render server data when one exists; the loader or prefetch boundary and consuming hook share the query definition and cache identity, critical data is awaited, optional prefetching does not block navigation, and component or flow effects do not initiate route-critical fetches.
 - Hooks consumed by flows or layouts expose an application-owned exhaustive server-state union rather than independent query flags; background refresh and refresh failure preserve usable data, and every real lifecycle state has an explicit variant.
@@ -275,4 +385,8 @@ For web or mobile features:
 - Frontend operational events and spans occur only at owned boundaries or meaningful transitions, satisfy `$engineering-observability`, export only through the controlled backend, and cannot form render, retry, ingestion, or provider-failure loops.
 - Supported-platform flows that cover core business actions, high-traffic journeys, or failure recovery include mandatory E2E coverage.
 - If a platform or E2E tool is unsupported in the repo, document the limitation and prioritize accessibility plus unit/component and flow coverage on supported platforms.
+- A mock-backed frontend slice is not reported as an end-to-end complete feature; production adapter integration and live contract/integration evidence remain explicit until verified.
+- Observable frontend changes have current browser, computer, emulator, or
+  device Runtime Acceptance evidence, including Design Conformance evidence when
+  an authoritative design exists.
 - Before completion, verify every triggered check or record its omission and alternative assurance in the `$engineering-for-certainty` handoff.

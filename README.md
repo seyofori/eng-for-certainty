@@ -1,6 +1,6 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `3373b45c8c9d297b982a52604d48b27f6e1d62a2`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `65578413b65eaae7023ac6da238a8ed77208af77`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
@@ -84,11 +84,15 @@ Install code review with its complete engineering doctrine:
 npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review
 ```
 
-Install issue review with its direct dependencies:
+Install issue review with its complete engineering doctrine:
 
 ```bash
-npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill grilling   --skill issue-review
+npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill grilling   --skill issue-review
 ```
+
+Issue review requires every companion triggered by the issue. The
+complete bundle above prevents a frontend, auth, resilience, or
+observability issue from being reviewed without its governing doctrine.
 
 Install pull request review with the complete review doctrine:
 

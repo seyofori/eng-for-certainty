@@ -16,9 +16,11 @@ Require companion engineering doctrine when the issue touches its area:
 - Observability: logging, metrics, tracing, audit records, correlation IDs, telemetry, redaction, or frontend log ingestion.
 - Resilience: external calls, retries, timeouts, idempotency, concurrency, queues, cron jobs, webhooks, background jobs, or async processing.
 - Auth/security: cookies, sessions, CSRF, token handling, actor context, protected routes, permission checks, policy registries, secrets, or authorization boundaries.
-- Frontend testing/accessibility: web/mobile test-stack decisions, E2E coverage, accessibility assertions, keyboard behavior, focus management, screen-reader behavior, or platform-specific UI testing.
+- Frontend engineering: frontend architecture, routes or screens, API adapters, hooks, flows or views, forms, client state, accessibility, client telemetry boundaries, or web/mobile testing.
 
-If the companion skill is available in the Codex session, use it. If it is not available, apply the local repo's equivalent docs or explicitly record the gap in the issue review.
+If the companion skill is available in the Codex session, use it. Otherwise use
+the local repository's equivalent doctrine. If neither is available, name the
+missing doctrine and do not declare the issue implementation-ready.
 
 For an existing issue, require its path. When the user asks to create an issue,
 discover the canonical issue directory, format, index, and next stable number.
@@ -134,6 +136,7 @@ the top. Keep it to roughly fifteen lines or fewer and include:
 - the one observable outcome;
 - the exact Branch Contract and pull-request base;
 - the acceptance-criterion IDs;
+- the Runtime Acceptance environments and any downstream release gate;
 - the allowed-change and pause boundaries;
 - the review-checkpoint sequence, when present; and
 - every linked appendix that must be read before a named checkpoint.
@@ -213,6 +216,12 @@ Every criterion must be testable or inspectable. It should describe an observabl
 Good: "`getApprovedQuestions` excludes draft and rejected records."
 Bad: "question filtering works correctly."
 
+For an issue that changes observable runtime behaviour, include an acceptance
+criterion requiring every issue-owned Runtime Acceptance scenario to pass
+against the exact final local candidate and every applicable authorized
+pre-merge preview or staging candidate. Link post-merge-only staging proof as a
+separate downstream release gate rather than implying it already passed.
+
 When a criterion uses universal or negative language ("only", "all", "every", "never", "no other"), verify it cannot be satisfied by a weaker existential check. Either the issue enumerates the exact elements the claim covers and states that each must independently hold, or it says explicitly that the check is a spot-check and why that's acceptable. A criterion like "the file contains only placeholder values" is otherwise easy to implement as "at least one placeholder is present" — a check that passes even when most of the listed values are real.
 
 When a criterion claims mutual exclusivity ("reachable from X, not from anyone else"), require independent verification in both directions: reject every disallowed side, and identify and accept the allowed side specifically rather than merely proving that some request succeeds. If the test method has a structural blind spot in either direction, state the blind spot and require a named compensating manual or automated verification step. For example, same-Docker-host traffic may use hairpin NAT and therefore cannot prove source-IP behavior across a genuine external network boundary.
@@ -259,7 +268,7 @@ Before implementation, include a traceability ledger with one row per acceptance
 |---|---|---|
 | `<criterion ID and outcome>` | `<file + symbol/module>` | `<test file + case name, or justified manual check>` |
 
-Split criteria that have multiple independently observable outcomes. Every row must name the code that owns the behavior and the exact evidence that will prove it; broad entries such as "frontend," "service layer," or "covered by tests" do not pass. Manual verification is acceptable only when automation is impractical and the issue explains why.
+Split criteria that have multiple independently observable outcomes. Every row must name the code that owns the behavior and the exact evidence that will prove it; broad entries such as "frontend," "service layer," or "covered by tests" do not pass. Manual verification may substitute for automated criterion proof only when automation is impractical and the issue explains why. A Runtime Acceptance Pass is complementary proof and remains independently required for observable runtime changes even when automated tests cover the same criteria.
 
 Require a post-implementation issue-against-diff audit by an independent reviewer or a separate skeptical pass that did not rely on the implementer's completion summary. Reconcile every ledger row against the actual production diff and test evidence, identify unplanned changes, and leave the issue unverified while any row lacks evidence.
 
@@ -269,7 +278,7 @@ Apply the same rule to platform and library mechanisms named under Affected Surf
 
 When the issue introduces a new artifact covered by an existing repo-wide invariant, such as image pinning, network exposure, or secrets hygiene, inspect the shared test files or suites that encode that invariant. The Test Approach must name the existing assertions and explicitly extend them to the new service, image, port, secret, or other artifact rather than adding only scenario-specific tests.
 
-When verification is split between standalone checks and a live or deployed instance, identify whether the live-only portion contains the scenario most likely to expose an integration defect, such as cross-branch recombination, interacting failure paths, or multi-service behavior. If it does, the issue must remain explicitly unverified—use a status such as `Needs Verification`, not `Done` with a caveat—until that scenario has run successfully.
+When verification is split between standalone checks and a live or deployed instance, identify whether the issue-owned live-only portion contains the scenario most likely to expose an integration defect, such as cross-branch recombination, interacting failure paths, or multi-service behavior. If it does, the issue must remain explicitly unverified—use a status such as `Needs Verification`, not `Done` with a caveat—until that scenario has run successfully. When the environment can receive only merged changes, make the scenario an explicit downstream release gate with its owner and trigger; it blocks release rather than falsely claiming pre-merge proof.
 
 If no local convention is visible, use:
 
@@ -282,6 +291,47 @@ it(`
   // ...
 })
 ```
+
+#### Runtime Acceptance Plan
+
+Every issue that changes observable runtime behaviour must define a Runtime
+Acceptance Plan using `$engineering-for-certainty`'s
+[Runtime Acceptance Pass](../engineering-for-certainty/references/runtime-acceptance.md).
+A documentation-only or other non-runtime issue may record `Not applicable`
+with a concrete reason.
+
+The plan must:
+
+- map every accepted externally observable criterion and materially distinct
+  outcome to a stable runtime scenario;
+- include one complete primary journey and a targeted exploratory check of the
+  changed area and its integration seams;
+- name the local runtime, startup command, safe test data, real external
+  boundary, exact actions or requests, expected outcomes, cleanup, and evidence;
+- require local proof against the final combined candidate after automated
+  validation;
+- require preview or staging proof when the exact candidate can be safely
+  deployed before merge and deployment is automated or separately authorized;
+- record post-merge-only staging proof as a mandatory downstream release gate
+  with its owner and trigger;
+- identify every necessary proxy, what it proves, its blind spot, and the later
+  literal gate when that blind spot is material;
+- define a secret-free scenario ledger tied to the exact revision and
+  environment, plus which later changes invalidate and require each scenario to
+  run again;
+- include a Test Identity Plan and Test Message Sink or inbox rules from
+  `$engineering-auth-security` when authentication is exercised; and
+- include the exact authoritative design, version, states, platforms, viewports,
+  screenshots, and approved deviations required by `$engineering-frontend`'s
+  Design Conformance Pass when the frontend is based on a design; verify the
+  source and version are accessible before declaring the issue ready.
+
+Do not treat an in-process handler call, component harness, mock adapter by
+itself, or implementer summary as runtime proof. A running mock-backed frontend
+may prove only an explicitly frontend-only slice when the plan names the adapter
+as a proxy and defers live backend integration proof. Keep the issue
+`Needs Verification` while required issue-owned runtime evidence is missing,
+failed, or stale.
 
 ### 9. Operational And Migration Safety
 
@@ -328,6 +378,9 @@ The record must contain:
   changed;
 - the reconciled result of every traceability row, including exact validation
   commands and outcomes;
+- every Runtime Acceptance scenario result, exact revision and environment,
+  proxy blind spot, invalidated proof re-run, design comparison when applicable,
+  and linked downstream release gate;
 - the final `$code-review` outcome and the disposition of every confirmed
   finding;
 - when checkpoint reviews were used, the checkpoint ID, accepted head SHA,
@@ -386,10 +439,11 @@ For an issue intended for `$deliver-issue`, include:
   strategy, material verifier disagreement, or missing product context.
 - Blocked triggers: `BLOCKED` for missing authority, credentials, access,
   external state, required skills, or out-of-scope prerequisites.
-- Residual-risk rule: a checkpoint may advance with `RESIDUAL_RISK` only when
-  the issue explicitly classifies the stated assumption as non-blocking and it
-  does not weaken an acceptance criterion or highest-risk verification gate.
-  Otherwise route it to `USER_DECISION`.
+- Residual-risk rule: `RESIDUAL_RISK` is a finding route, not a checkpoint
+  result. When the issue explicitly classifies the stated assumption as
+  non-blocking and it does not weaken an acceptance criterion or highest-risk
+  verification gate, record the risk and permit a `CLEAN` checkpoint result.
+  Otherwise use `USER_DECISION` as the checkpoint result.
 - Re-review rule: after every correction batch, re-run invalidated proof and a
   clean review of the resulting head; preserve finding IDs and dispositions.
 - Churn threshold: escalate when the same root cause survives two correction
@@ -487,6 +541,10 @@ Before editing, verify:
 - **Issue identity**: pending issue filenames follow the discovered convention, use a stable number and valid Conventional Commit type, and all roadmap/index and sibling references resolve after any rename.
 - **Decomposition and branches**: the issue is one proven Smallest Coherent Slice or an ordered child pack; every slice owns exactly one Branch Contract and pull request, no feature-wide pull request spans multiple slices, only genuinely dependent pull requests are stacked, and every contract records its exact base ref and worktree isolation mode without a machine-specific path.
 - **Traceability**: every independently observable criterion has one or more ledger rows with an exact production owner and exact test or justified manual verification; the post-implementation audit is named.
+- **Runtime acceptance**: every observable runtime change has a complete local
+  plan, applicable exact-candidate preview or staging plan, real-boundary
+  scenarios, secret-free evidence contract, invalidation rules, and specialist
+  auth or design proof; non-runtime work has a justified `Not applicable` entry.
 - **Attention budget**: the core child issue keeps approved intent, acceptance,
   authority, pause conditions, and checkpoint routing prominent; reusable
   doctrine and raw evidence are not copied into it; length signals triggered
@@ -551,6 +609,8 @@ Parent: <parent issue, when this is a child slice>
 
 ### Traceability Ledger
 
+## Runtime Acceptance Plan
+
 ## Review Loop Contract
 
 ## Completion Requirements
@@ -558,7 +618,9 @@ Parent: <parent issue, when this is a child slice>
 ## Notes
 ```
 
-Omit sections that genuinely do not apply. Do not add empty sections. Populate
+Omit sections that genuinely do not apply, except keep `Runtime Acceptance Plan`
+with a justified `Not applicable` entry for non-runtime work. Do not add empty
+sections. Populate
 `Completion Requirements` with the issue-specific write-back, evidence, status,
 and propagation rules during readiness review. Add the actual `Issue Completion
 Record` only after implementation evidence exists; never prefill it with

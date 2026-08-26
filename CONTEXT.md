@@ -25,6 +25,28 @@ _Avoid_: Shared checkout, canonical issue path
 The durable evidence written to the canonical issue by the implementation or integration agent after final review and before the issue is marked done. It records the final status, completion date, affected surfaces, reconciled traceability evidence, validation results, review outcome, deviations, residual risks, deferred checks, and available branch, commit, or pull-request references.
 _Avoid_: Completion summary, PR-only evidence, chat-only handoff
 
+**Runtime Acceptance Pass**:
+An agent-operated check that exercises a running system through its real
+external boundary to verify an issue's observable behaviour after automated
+tests pass.
+_Avoid_: Automated test suite, in-process handler invocation, code inspection
+
+**Test Identity Plan**:
+The issue-specific contract for obtaining, using, resetting, and cleaning up
+disposable identities during authentication acceptance scenarios.
+_Avoid_: Personal account, production customer, unmanaged temporary account
+
+**Test Message Sink**:
+An isolated non-production delivery adapter that exposes authentication emails
+or messages to authorized tests without sending their secrets through
+operational telemetry.
+_Avoid_: Production inbox, ordinary application log, exported OTP event
+
+**Design Conformance Pass**:
+An issue-owned comparison of a running frontend against the exact authoritative
+design states, versions, platforms, and viewports named by its design contract.
+_Avoid_: Memory-based comparison, subjective looks-close check, universal pixel equality
+
 **Delivery Operator**:
 The composing workflow implemented by `$deliver-issue` that carries one
 approved issue through implementation, issue-owned validation, independent code
@@ -71,8 +93,10 @@ _Alias_: `code-review-dexwin` on the engineering server
 _Avoid_: PR review, separate Dexwin review doctrine
 
 **Pull Request Review**:
-A GitHub-specific workflow that uses **Code Review**, obtains user adjudication, and publishes only accepted findings.
-_Avoid_: Code review
+A GitHub-specific workflow that uses **Code Review**, obtains a comment or fix
+disposition for each confirmed finding, publishes only comment dispositions,
+and routes fix dispositions through issue-owned delivery.
+_Avoid_: Code review, reviewer implementation, comment-only adjudication
 
 **Pull Request Creation**:
 The publication workflow that verifies completed local work against its issue and branch contract before pushing and opening or updating the GitHub pull request.
@@ -122,6 +146,32 @@ _Avoid_: Client-to-vendor export, client audit authority, unrestricted OTLP rece
 A safe log event emitted once at an owned client boundary or meaningful failure transition for operational diagnosis rather than product analytics.
 _Avoid_: Render log, clickstream event, raw client error
 
+**Domain API Factory**:
+A domain-owned frontend factory named `create[Domain]Api` that produces one
+stable, typed adapter surface from explicit production or mock options. The
+factory remains pure and does not read application environment or global
+configuration.
+_Avoid_: Global API container, environment-reading factory, generic `createApi`
+
+**Domain API Entrypoint**:
+The domain adapter module that reads validated application configuration once,
+calls its **Domain API Factory**, and exports stable operations for hooks and
+other consumers. Mock selection stops here; consuming frontend layers never
+receive environment values or mock configuration.
+_Avoid_: Mock-aware hook, per-call mode flag, raw environment read
+
+**Mock Outcome**:
+A mock-only success-or-failure instruction for one frontend API operation. Its
+`type` discriminant selects either the operation's exact success value or exact
+failure value, with an optional delay.
+_Avoid_: Untyped fixture, thrown expected failure, production input flag
+
+**Mock Scenario**:
+A domain-owned set of **Mock Outcomes** used to construct a mock implementation
+of that domain's API. Application configuration may select a named scenario;
+isolated tests may pass the scenario directly.
+_Avoid_: Hook mock, random default, environment value passed through the UI
+
 **Frontend Component**:
 A UI unit that does not represent one complete navigable screen and is owned by the narrowest module, domain, or application boundary that contains all of its uses.
 _Avoid_: Partial view, globally shared by default
@@ -168,6 +218,49 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   slices use the verified canonical branch as their pull-request base; a
   **Stacked Pull Request** uses its preceding pull-request branch.
 - Every completed issue owns one **Issue Completion Record** in its canonical issue file; the implementation or integration agent writes it, and the final reviewer verifies it before the issue is marked done.
+- Every issue that changes observable runtime behaviour owns a **Runtime
+  Acceptance Pass**. A non-runtime issue records that the pass is not applicable
+  and explains why.
+- A **Runtime Acceptance Pass** runs locally before pull-request readiness and
+  repeats against a staging or preview environment when that environment safely
+  exposes the exact candidate version before merge and deployment is authorized.
+  When staging receives only merged changes, its pass is a mandatory downstream
+  release gate instead of an issue-completion gate.
+- A **Runtime Acceptance Pass** exercises every accepted externally observable
+  outcome, one complete primary journey, and a targeted exploratory check of the
+  changed area and its integration seams. Automated tests retain exhaustive
+  value combinations and low-level boundary coverage.
+- A **Runtime Acceptance Pass** uses the real external boundary: network requests
+  to a running API, browser control for a running web interface, computer or
+  device control for native or operating-system-dependent interfaces, and the
+  literal operational trigger for jobs or integrations when safely available.
+  A necessary proxy names what it proves, its blind spot, and the later gate that
+  must exercise the literal mechanism when that blind spot is material.
+- A **Runtime Acceptance Pass** leaves a concise, secret-free scenario ledger
+  tied to the exact revision and environment. A later production, dependency,
+  runtime-configuration, deployment, or test-data change invalidates every
+  scenario it could affect and requires those scenarios to run again.
+- An authentication **Runtime Acceptance Pass** follows a **Test Identity Plan**.
+  Local environments prefer seeded disposable users and a **Test Message Sink**;
+  staging prefers team-controlled test inboxes for repeatability but may use a
+  private agent-created disposable inbox to prove real external delivery for the
+  tested build and recipient provider. A staging **Test Message Sink** proves
+  only application-side delivery and is sufficient when real provider delivery
+  is not an acceptance criterion.
+- A **Test Message Sink** is disabled in production, isolated from **Safe Log
+  Events**, limited to disposable test identities, access-controlled, and
+  short-lived. Runtime evidence records successful retrieval without recording
+  the OTP, magic link, session, or other authentication secret.
+- A frontend **Runtime Acceptance Pass** includes a **Design Conformance Pass**
+  whenever its issue names an authoritative design. Material mismatches fail the
+  pass; conflicts between the design, accepted behaviour, design system,
+  accessibility, or platform conventions require an explicit decision instead
+  of a silent deviation.
+- `$engineering-for-certainty` owns the universal **Runtime Acceptance Pass**
+  rule; `$issue-review` authors its issue-specific plan; the **Delivery Operator**
+  executes it; **Code Review** audits its coverage and evidence; **Pull Request
+  Creation** gates publication on current proof; and the triggered frontend,
+  auth/security, and observability doctrines own their specialist constraints.
 - Every implementation-ready issue states a **Review Loop Contract**. A durable
   goal supplies persistence but does not expand correction authority.
 - A **Delivery Operator** consumes the issue, preserves the ownership boundaries
@@ -179,6 +272,9 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   **Accepted Checkpoint Head** with no unresolved confirmed finding.
 - `AUTO_CORRECT` returns to the current checkpoint; `USER_DECISION` and
   `BLOCKED` pause delivery and leave any durable goal incomplete.
+- `RESIDUAL_RISK` is a finding route, never a checkpoint result. A checkpoint
+  may return `CLEAN` with a recorded residual risk only when the governing issue
+  explicitly permits it and acceptance or highest-risk proof is not weakened.
 - A durable goal supplies persistence only while an authorized transition
   exists. It cannot change a finding route or cross a non-clean checkpoint.
 - After the last checkpoint, **Final Integration Review** remains required
@@ -187,7 +283,10 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   the **Delivery Operator** applies only issue-authorized corrections and
   returns material ambiguity to the user.
 - An issue remains `Needs Verification` while any issue-owned acceptance, review, or highest-risk verification gate lacks evidence. An explicitly out-of-scope downstream or release gate does not block issue completion when the issue links it and names its owner or trigger.
-- A **Pull Request Review** uses **Code Review** as its analysis engine.
+- A **Pull Request Review** uses **Code Review** as its analysis engine. After
+  the complete queue is adjudicated, findings marked `fix` pass through
+  `$issue-review` before the **Delivery Operator** changes the existing pull
+  request under its approved issue and branch contracts.
 - **Pull Request Creation** consumes completed local work and produces a GitHub pull request; it does not implement or review the change.
 - **Pull Request Creation** derives draft or ready status from **Pull Request Readiness**; verified completed work is ready for review.
 - A **Responsible Engineer** applies **Pending Review** and notifies the reviewer after pushing requested corrections and regression evidence; the label does not transfer thread-resolution ownership.
@@ -195,7 +294,9 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - A **Code Review** produces one **Review Queue** after investigating, verifying, deduplicating, and ranking the complete finding landscape.
 - Every current item from a **Review Queue** or **Decision Queue** displays **Queue Progress** as `Finding 11 of 30 - 19 remain after this` or `Decision 11 of 30 - 19 remain after this`.
 - When recomputation changes the known total, **Queue Progress** states the previous total, new total, and reason before presenting the next item; stable item IDs do not change.
-- A **Pull Request Review** tags the **Responsible Engineer** only after the user accepts a finding.
+- A **Pull Request Review** tags the **Responsible Engineer** only for a finding
+  the user chooses to publish as a comment. A successfully delivered `fix`
+  disposition does not also publish the proposed inline comment.
 - Independent finder and verifier passes use separate **Clean Review Contexts**.
 - Each **Helper Branch** contributes validated commits to exactly one **Canonical Integration Branch** through the issue's named Git integration strategy, never by copying files between worktrees.
 - A **Canonical Integration Branch** is reviewed and validated as a combined change before **Pull Request Creation**.
@@ -205,6 +306,8 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - Persisted backend logs and audits satisfy typed **Safe Log Event** contracts; metrics use named instruments with bounded attributes; traces use approved tracer, semantic-convention, attribute, propagation, sampling, and export contracts.
 - **Client Telemetry Ingestion** accepts only frontend event families that can be converted into **Safe Log Events** and client traces that can be reduced to a closed bounded trace contract; authoritative security and audit events are generated by the backend.
 - `engineering-frontend` owns when a **Frontend Operational Event** or significant client span begins; `engineering-observability` owns its signal contract, propagation, delivery, ingestion, export, privacy, retention, and capacity policy.
+- A **Domain API Entrypoint** selects production or mock options from validated configuration and passes them to its pure **Domain API Factory**. Both implementations satisfy the same exact operation contracts; mock-only configuration cannot enter those contracts or any consuming frontend layer.
+- A **Domain API Factory** receives a **Mock Scenario** only when constructing its mock implementation. Each **Mock Outcome** becomes a callable operation with the same input and return type as its production counterpart.
 - A **Full-Screen View** composes **Frontend Components**; a component used by one module belongs to that module, while a shared component belongs to the narrowest boundary that owns all of its uses.
 - Client spans leave the client only through **Client Telemetry Ingestion**; downstream trace delivery follows **Server-Owned Trace Export** whether the backend exports directly or through an OpenTelemetry Collector.
 - **Client Telemetry Ingestion** and **Server-Owned Trace Export** must satisfy their signal-specific **Telemetry Budgets** under normal load, event storms, malicious traffic, a full queue, and provider outages.

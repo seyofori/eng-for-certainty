@@ -20,7 +20,9 @@ Resolve and read:
 - the intended base branch or preceding stacked-PR branch;
 - the pre-work execution handoff's runtime worktree path and resolved base SHA;
 - the complete local diff, commits, untracked files, and validation evidence;
-- the traceability ledger and final independent review evidence.
+- the traceability ledger, Runtime Acceptance Plan and current scenario evidence
+  when observable runtime behaviour changed, and final independent review
+  evidence.
 
 If no canonical issue exists, ask for the issue identity before publishing. Distinguish the repository's local numbered issue from a GitHub issue number; never invent `Closes #N` from a local filename.
 
@@ -75,9 +77,17 @@ Confirm that:
 - triggered doctrine for migrations, auth/security, resilience, observability, and frontend work is satisfied;
 - the Migration Proof Harness evidence exists when a database migration is present;
 - material deviations are reflected in the canonical issue;
-- no required evidence is represented by a placeholder, caveat, or unverified claim.
+- no required evidence is represented by a placeholder, caveat, or unverified claim;
+- every required issue-owned Runtime Acceptance scenario passed against the
+  exact current commit or deployed build, every invalidated scenario was rerun,
+  and applicable auth and Design Conformance evidence is secret-free and
+  complete.
 
-If remote-only validation is the only remaining evidence, leave the issue `Needs Verification` and use draft readiness until that evidence and the final audit succeed.
+If remote-only validation or a pull-request-created preview Runtime Acceptance
+Pass is the only remaining evidence, leave the issue `Needs Verification` and
+use draft readiness until that evidence and the independent final audit succeed.
+A post-merge-only staging pass may remain a linked downstream release gate with
+an owner and trigger; it blocks release, not issue-owned publication proof.
 
 ### 3. Resolve Stack Position
 
@@ -115,7 +125,8 @@ Write a conditional PR body containing only applicable sections:
 3. What changed.
 4. Explicitly excluded scope.
 5. Important design decisions.
-6. Exact validation commands and results.
+6. Exact automated validation and Runtime Acceptance results, including the
+   tested revision and local, preview, or staging environment.
 7. Migration proof evidence.
 8. Security, privacy, resilience, and observability effects.
 9. UI screenshots and accessibility evidence.
@@ -131,7 +142,9 @@ Choose exactly one outcome from evidence:
 
 - **Do not create:** material implementation or evidence is incomplete and the user did not request WIP publication.
 - **Draft:** the user explicitly requested WIP publication, or required evidence can only run after PR creation. Keep the issue `Needs Verification`.
-- **Ready for review:** the issue is verified complete, the traceability ledger and final review are satisfied, accepted findings are fixed, and no known blocker remains.
+- **Ready for review:** the issue is verified complete, the traceability ledger,
+  current Runtime Acceptance evidence, and final review are satisfied, accepted
+  findings are fixed, and no known blocker remains.
 
 Pending GitHub CI alone does not make a completed PR a draft. When draft status exists only to obtain remote evidence, verify that evidence, complete the final audit, and mark the PR ready when every gate passes.
 

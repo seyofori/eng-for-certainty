@@ -1,6 +1,6 @@
 ---
 name: engineering-auth-security
-description: Explicit auth and session security doctrine. Use when work touches cookies, tokens, sessions, CSRF, authentication boundaries, actor context, protected routes, authorization, roles, permissions, or policy enforcement.
+description: Explicit auth and session security doctrine. Use when work touches cookies, tokens, sessions, CSRF, authentication boundaries, test identities or message sinks, actor context, protected routes, authorization, roles, permissions, or policy enforcement.
 ---
 
 # Engineering Auth Security
@@ -17,6 +17,8 @@ Apply this skill when the work includes:
 - permission checks or authorization rules
 - roles, permissions, or policy registry changes
 - auth middleware, guards, or backend auth boundaries
+- runtime acceptance of signup, sign-in, verification, recovery, role, or
+  session flows
 
 ## Doctrine
 
@@ -82,6 +84,57 @@ Apply this subsection in order: shared permission source first, registry shape s
 - A route, guard, or adapter that introduces authentication or authorization checks may widen the underlying operation's error union with the exact failures introduced by those checks.
 - In Fastify or similar backends, perform auth checks before parsing request bodies when parsing errors could leak information.
 
+## Runtime Authentication Acceptance
+
+For an authentication Runtime Acceptance Pass, follow `$engineering-for-certainty`'s
+[Runtime Acceptance Pass](../engineering-for-certainty/references/runtime-acceptance.md)
+and require an issue-specific Test Identity Plan.
+
+The plan must name the environment, disposable identities and roles, how inbox
+or message access is obtained, approved secret delivery, reset and session
+revocation, test-data isolation, cleanup, and any CAPTCHA, SMS, passkey,
+physical-device, or human-approval boundary.
+
+Use this hierarchy without weakening the real application flow:
+
+- Locally, prefer seeded disposable users for existing-account scenarios and a
+  Test Message Sink or provider test mode for signup, verification, invitation,
+  and recovery flows.
+- On preview or staging, prefer a team-controlled test inbox for repeatability.
+  When one is unavailable, a private agent-created disposable inbox is a valid
+  standard method when the application and inbox provider permit automated test
+  use, the mailbox is private or protected by an unguessable access token, and
+  only synthetic staging data is used.
+- A real message delivered from staging to an external disposable inbox proves
+  the tested build's delivery path to that recipient provider. Do not widen that
+  claim to every provider, domain, spam-placement policy, or production setup.
+- Never use a publicly readable temporary inbox for OTPs, magic links, password
+  resets, sessions, or other bearer secrets.
+- Creating a disposable identity or inbox is authorized only when the issue's
+  Runtime Acceptance Plan names that operation and environment. It does not
+  authorize unrelated third-party accounts or production customer data.
+
+A Test Message Sink is a non-production delivery adapter, not an operational
+log:
+
+- Keep it separate from the logger, audit, metrics, tracing, error reporting,
+  and telemetry-export pipelines.
+- Disable or reject it in production. Limit it to disposable test identities,
+  authorized test-environment readers, and short bounded retention.
+- It may expose a message through a mail-catcher UI or API, provider test tool,
+  or isolated terminal output. Do not send its secret-bearing content through
+  normal application logs merely because the environment is non-production.
+- A staging Test Message Sink proves application-side message generation and
+  routing, not delivery through the real provider and public mail network.
+- Use OTPs, magic links, mailbox credentials, and sessions only to complete the
+  scenario. Never copy them into issues, pull requests, screenshots, logs, or
+  completion evidence.
+
+Treat CAPTCHA, SMS, passkeys, hardware keys, physical-device requirements, and
+manual account approval as explicit blocked or downstream gates unless the
+repository already provides a safe non-production mechanism. Never add a
+production auth bypass for acceptance testing.
+
 ## Testing and Review
 
 - Test login, logout, refresh, and expired-session behavior when touched.
@@ -92,6 +145,12 @@ Apply this subsection in order: shared permission source first, registry shape s
 - Test policy-registry resolution and both `all_of` and `any_of` policy
   evaluation when authorization rules change.
 - Test CSRF behavior whenever cookie-based auth changes.
+- Verify the Runtime Acceptance evidence exercises the real auth boundary with
+  the approved Test Identity Plan, revokes or cleans up disposable state where
+  supported, and records no authentication secret.
+- Test that every Test Message Sink is unavailable in production and cannot send
+  OTPs, magic links, mailbox tokens, sessions, or message bodies into
+  operational telemetry or ordinary logs.
 - Verify secure storage and transport assumptions match the selected architecture.
 - Verify that auth and permission variants appear only on operations whose declared boundary can emit them.
 - Before completion, verify every triggered check or record its omission and alternative assurance in the `$engineering-for-certainty` handoff.

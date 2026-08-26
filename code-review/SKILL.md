@@ -120,6 +120,9 @@ Read the smallest sufficient set of artifacts that define the intended behavior:
 - Feature files, plans, ADRs, and relevant documentation.
 - Schemas, API contracts, migrations, configuration, and public types.
 - Existing tests and nearby implementation examples.
+- The issue's Runtime Acceptance Plan and current scenario evidence, including
+  exact revision and environment, proxy blind spots, design comparison,
+  invalidated re-runs, and downstream release gates when applicable.
 
 For a checkpoint review, also read the checkpoint row, its owned acceptance and
 traceability rows, its required appendices, the previous accepted checkpoint
@@ -299,6 +302,14 @@ Check whether failures can be detected, attributed, and diagnosed. Inspect struc
 
 Check whether tests cover the changed contract, success paths, expected failures, boundaries, and regression scenario. Detect tests that mock away the disputed behavior, assert implementation details, pass vacuously, or omit real wiring. Treat missing tests as supporting evidence for a behavior risk, not automatically as a standalone finding.
 
+For observable runtime changes, independently audit whether the Runtime
+Acceptance scenarios cover every accepted observable outcome, one complete
+primary journey, and targeted exploration through the real external boundary.
+Check that the evidence belongs to the reviewed revision and environment, that
+necessary proxies and design deviations are explicit, and that later changes did
+not make the evidence stale. Do not infer runtime correctness from green tests or
+the implementer's completion summary.
+
 ### L. Architectural altitude and conventions
 
 Look for special cases bolted onto shared infrastructure, workarounds that bypass existing abstractions, and fixes that leave the same invariant broken for sibling consumers. Name the deeper mechanism that should own the behavior. Report convention violations only when an applicable rule can be cited and the violation is material.
@@ -396,6 +407,19 @@ When subagents are unavailable, perform the same verifier roles as deliberately 
 Run the narrowest safe command that materially changes confidence: a focused test, type check, build, linter, static analysis, minimal reproduction, integration test, or schema or migration validation.
 
 Distinguish validation executed from validation merely recommended. A passing test refutes a candidate only when the test exercises the disputed behavior and contains a meaningful assertion. Do not mutate production systems or external state during validation.
+
+For Runtime Acceptance evidence, keep the reviewer read-only. Reconcile the
+scenario ledger against the issue, diff, deployed build identity, screenshots or
+sanitized responses, and current repository state. Use a safe read-only runtime
+reproduction only when it can materially resolve a disputed claim without
+creating accounts, changing shared data, deploying, or exercising destructive
+behaviour.
+
+Return missing, failed, stale, secret-bearing, or wrong-revision runtime evidence
+as a verification gap to the composing delivery workflow. Create a normal code
+finding only when that gap and the inspected implementation support a concrete,
+reachable, material failure; do not turn process incompleteness alone into a
+code defect.
 
 ## Severity and Ranking
 

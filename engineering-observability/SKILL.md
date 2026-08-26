@@ -1,6 +1,6 @@
 ---
 name: engineering-observability
-description: Explicit observability doctrine for backend and frontend operational telemetry, including safe structured logging, OpenTelemetry tracing, W3C context propagation, metrics, redaction, correlation, client ingestion, capacity protection, retention, and sink failure. Use when work touches logs, metrics, traces, spans, telemetry, alerts, audits, request IDs, or frontend logging and tracing.
+description: Explicit observability doctrine for backend and frontend operational telemetry, including safe structured logging, OpenTelemetry tracing, W3C context propagation, metrics, redaction, correlation, client ingestion, test-message separation, capacity protection, retention, and sink failure. Use when work touches logs, metrics, traces, spans, telemetry, alerts, audits, request IDs, frontend logging and tracing, or secret-bearing test message sinks.
 ---
 
 # Engineering Observability
@@ -18,6 +18,7 @@ Apply this skill to:
 - correlation or request ID propagation
 - database, provider, SDK, queue, job, or infrastructure failure logging
 - frontend operational event or span emission and client-to-backend ingestion
+- separation of authentication Test Message Sinks from logs and telemetry
 
 ## Centralized Configuration And Signal Boundaries
 
@@ -28,7 +29,7 @@ Apply this skill to:
 - Accept typed Safe Log Events, not arbitrary context bags, raw request objects, raw errors, or spread objects. Give metrics and manual spans explicit allowlisted attribute contracts.
 - Define a closed schema per event family. Reject unknown keys and bound every accepted string, array, nesting level, and payload size before forwarding.
 - Keep logging out of business transactions and critical request completion. Logging failure must not change a successful business outcome unless the event is an explicitly authoritative audit requirement.
-- When `NODE_ENV` is `production`, missing Better Stack logging configuration or required tracing exporter configuration is a startup error. In `development`, default to console logging and a local or no-op tracing exporter when remote sinks are absent. Treat an unset `NODE_ENV` as development only in a verified local development environment.
+- When `NODE_ENV` is `production`, missing required configuration for the repository's selected logging sink or required tracing exporter is a startup error. When the repository selects Better Stack, this includes its required Better Stack configuration. In `development`, default to console logging and a local or no-op tracing exporter when remote sinks are absent. Treat an unset `NODE_ENV` as development only in a verified local development environment.
 - If the primary sink fails, use a bounded sanitized stderr or console fallback and surface safe aggregate health or alert signals when the repo supports them. Never recursively log a logger failure through the failing path.
 
 ## Safe Log Event Contract
@@ -49,6 +50,23 @@ retryCount, environment, deploymentVersion
 - Allow an approved opaque actor or record identifier only when the event cannot meet its operational or audit purpose without it. Prefer keyed pseudonymization when joinability is needed without direct identity, and document retention and access implications.
 - Sanitize CR, LF, delimiters, and other log-injection characters in every remaining string field before encoding.
 - Treat redaction as defense in depth, not as permission to accept arbitrary input.
+
+### Test Message Sinks Are Not Telemetry
+
+An authentication Test Message Sink may expose an OTP, magic link, or test
+message through a mail-catcher UI or API, provider test tool, or isolated
+terminal output only under `$engineering-auth-security`'s non-production rules.
+It is a delivery adapter, not an operational log or Safe Log Event.
+
+- Keep its secret-bearing output out of logger, audit, metrics, tracing, error
+  reporting, CI-log collection, and telemetry-export pipelines.
+- Do not solve test-message retrieval by weakening redaction or allowing tokens,
+  message bodies, mailbox credentials, sessions, or direct identity into a log
+  schema.
+- Disable or reject the sink in production and keep access and retention bounded
+  in non-production environments.
+- Runtime Acceptance evidence may record that the message was retrieved and
+  accepted; it must not reproduce the secret or message body.
 
 ## Source-Specific Failure Adapters
 
@@ -136,6 +154,9 @@ Require tracing when the work explicitly changes tracing; crosses services, proc
 - Test event schemas, unknown-key rejection, length and size limits, log-injection sanitization, and correlation propagation.
 - Seed sensitive values into raw errors, requests, database parameters, provider responses, and frontend payloads; prove that none reaches logs, metrics, traces, audits, or fallbacks.
 - Test every source adapter's allowed and forbidden fields, including missing database metadata.
+- When a Test Message Sink exists, prove it is unavailable in production and
+  cannot forward secret-bearing content into logs, audits, metrics, traces,
+  errors, CI artifacts, fallbacks, or exporters.
 - Test frontend event and trace ingestion authentication, reduced anonymous contracts when present, forged identity and authority, PII smuggling, schema/version rules, span/event/attribute/link limits, batch and body limits, rate limits, and generic failures.
 - Exercise the real changed HTTP, queue, job, webhook, or client-to-backend boundary where a valid integration environment exists. Prove W3C context injection/extraction, correct parent or link relationships, root-span creation, semantic names and kinds, bounded attributes, and the final exported trace.
 - Test error and expected-outcome semantics, parent-based sampling, unsampled application correctness, and that client trace export reaches only the controlled backend.

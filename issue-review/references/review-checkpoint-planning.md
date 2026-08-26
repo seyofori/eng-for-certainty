@@ -56,16 +56,19 @@ Do not repeat the full Review Loop Contract in every row.
 
 ## Advance Rules
 
-A checkpoint has these transitions:
+A checkpoint has these result transitions:
 
 ```text
 CLEAN          -> record accepted head; begin the next checkpoint
 AUTO_CORRECT   -> correct, revalidate, and re-review the same checkpoint
 USER_DECISION  -> pause; keep delivery and any durable goal incomplete
 BLOCKED        -> pause; keep delivery and any durable goal incomplete
-RESIDUAL_RISK  -> advance only when the issue explicitly permits the stated
-                  risk and it does not weaken acceptance or highest-risk proof
 ```
+
+`RESIDUAL_RISK` is a finding route, not a checkpoint result. When the issue
+explicitly permits the stated risk and it does not weaken acceptance or
+highest-risk proof, record it under `residual_risks` and return `CLEAN` for the
+checkpoint. Otherwise return `USER_DECISION`.
 
 A durable goal never changes these transitions. It supplies persistence only
 while an authorized transition exists.
