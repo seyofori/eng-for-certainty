@@ -1,21 +1,42 @@
 ---
 name: pull-request-review
-description: Review a GitHub pull request through the evidence-verified code-review pipeline, reconcile existing review threads against later commits, obtain user adjudication of new findings, and publish accepted inline comments with fix guidance. Use when the user asks to review a PR and wants verified findings managed as GitHub review conversations.
+description: Review a GitHub pull request through the evidence-verified code-review pipeline, reconcile existing threads, adjudicate comments or issue-owned fixes, and optionally carry an explicitly authorized review-to-merge workflow through durable follow-ups, merge, and guarded branch cleanup. Use for GitHub PR review conversations or an explicit request to review a PR through merge.
 ---
 
 # Pull Request Review
 
-Use `$code-review` as the sole analysis engine. On the Dexwin engineering server, use `code-review-dexwin`, its execution alias, as the same canonical analysis engine. Own the GitHub-specific workflow: resolve the pull request, reconcile existing threads, present new verified findings for user adjudication, publish accepted comments, and verify the resulting review state.
+Use `$code-review` as the sole analysis engine. On the Dexwin engineering server, use `code-review-dexwin`, its execution alias, as the same canonical analysis engine. Own the GitHub-specific workflow: resolve the pull request, reconcile existing threads, adjudicate new verified findings, coordinate issue-owned correction when authorized, publish selected comments, and verify the resulting review state.
 
 Do not duplicate or weaken `code-review` doctrine. If neither the canonical skill nor its platform alias is available, or one of its triggered engineering dependencies is unavailable, stop and name every missing skill.
 
+**Review-to-Merge Mode** additionally requires `$issue-review`,
+`$deliver-issue`, and `$grilling`, together with the dependencies those skills
+declare. Resolve the complete required skill set before starting mutations and
+stop with one complete missing-dependency list rather than discovering gaps
+mid-workflow.
+
 ## Boundary And Authorization
 
-Keep analysis of new findings read-only. User acceptance of specific findings authorizes publication of only those findings to the resolved pull request. Never post rejected, unreviewed, `CONDITIONAL`, or `NEEDS_CONTEXT` candidates. Thread reconciliation may perform only the pre-authorized workflow-owned reply and resolution writes described below.
+Keep finder and verifier contexts read-only. In ordinary review mode, user
+selection of `comment` authorizes publication of only those findings to the
+resolved pull request; selection of `fix` authorizes only the issue-review
+handoff until the resulting issue is confirmed for delivery. Never post
+rejected, unreviewed, `CONDITIONAL`, or `NEEDS_CONTEXT` candidates. Thread
+reconciliation may perform only the pre-authorized workflow-owned reply and
+resolution writes described below.
 
 Treat thread reconciliation as part of every invocation; do not require a separate request. Automatically reply to and resolve only workflow-owned threads that are verified as fixed or obsolete. Inspect human-owned threads, but never resolve them automatically.
 
-Do not implement fixes, push commits, dismiss human reviews, approve the pull request, or merge it unless the user separately authorizes that action.
+Enter **Review-to-Merge Mode** only when the user explicitly asks to take the
+pull request through merge, for example `$pull-request-review #123 to merge`.
+That invocation authorizes only the conditional writes and cleanup defined in
+[Review to Merge](references/review-to-merge.md). A generic request to review a
+pull request remains ordinary review mode and never implies implementation,
+push, approval, merge, auto-merge, or branch deletion authority.
+
+Do not dismiss human reviews, approve on another person's behalf, bypass branch
+protection, use an administrative merge override, deploy, force-push, or perform
+unrelated cleanup in either mode.
 
 ## Workflow
 
@@ -63,19 +84,49 @@ Load and follow `$code-review`, or `code-review-dexwin` on the Dexwin engineerin
 
 Keep finder and verifier contexts logically independent. Never convert an existing comment, reviewer opinion, or subagent claim directly into a finding without verification.
 
+When **Review-to-Merge Mode** is active, read and follow
+[Review to Merge](references/review-to-merge.md) after the complete verified
+queue returns. Its explicit route handling replaces the ordinary adjudication
+steps below while preserving this skill's pull-request resolution, thread
+ownership, evidence, and post-write verification rules.
+
 ### 4. Work Through The Review Queue
 
 Receive the complete confirmed, deduplicated, ranked finding queue from `code-review` before presenting its first item. Do not limit broad investigation to the current conversation item.
 
-Present one finding at a time. Include its stable ID, the full normal review evidence, a preview of the proposed GitHub comment, and `**Progress: Finding <position> of <total> - <remaining> remain after this**` on every response that presents or continues it. Calculate position and total using prior dispositions plus the active queue; do not show a remaining count alone. Ask the user to accept, reject, revise, defer, discuss, or request named evidence for the current finding. Do not present the next finding until the current one has an explicit disposition, then recompute the queue for dependencies or duplicates. If the total changes, state `**Queue revised: <old> -> <new>.** <reason>` before the next finding; never silently change the denominator or stable finding IDs.
+Present one finding at a time. Include its stable ID, the full normal review evidence, a preview of the proposed GitHub comment, and `**Progress: Finding <position> of <total> - <remaining> remain after this**` on every response that presents or continues it. Calculate position and total using prior dispositions plus the active queue; do not show a remaining count alone. Ask the user to choose `comment`, `fix`, `reject`, `revise`, `defer`, `discuss`, or `request evidence` for the current finding. `comment` publishes the proposed review conversation; `fix` routes the finding through issue-owned delivery and does not also publish the comment. Do not present the next finding until the current one has an explicit disposition, then recompute the queue for dependencies or duplicates. If the total changes, state `**Queue revised: <old> -> <new>.** <reason>` before the next finding; never silently change the denominator or stable finding IDs.
 
 Use a batch of at most ten only when the user explicitly requests batch adjudication or a complete report. A generic request to review a pull request is not a request for batching. Treat `agree to all` as acceptance of the current explicit batch only.
 
-Do not publish unadjudicated findings. Preserve accepted, rejected, revised, and deferred state across the queue, and never re-propose a rejected finding unless new evidence materially changes the claim.
+Do not publish unadjudicated findings. Preserve comment, fix, rejected, revised,
+and deferred state across the queue, and never re-propose a rejected finding
+unless new evidence materially changes the claim.
 
-### 5. Publish Accepted Findings
+In ordinary review mode, `defer` is read-only: retain the finding and its reason
+in the closeout as explicitly postponed work. It does not publish a comment,
+create an issue, change the pull request, or imply permission to merge. The user
+must separately choose `comment`, `fix`, or explicit review-to-merge handling to
+authorize those writes.
 
-Deduplicate against all existing threads immediately before publication. Attach each accepted finding to the closest causal changed line. If the causal line cannot accept an inline comment, use a file-level thread or the nearest changed line and explain the anchor.
+### 5. Apply Adjudicated Dispositions
+
+After the complete ordinary review queue is adjudicated, collect all `fix`
+findings and load `$issue-review` to verify or revise the governing issue and
+scope as one coherent correction handoff. Out-of-scope findings require a
+separate issue and pull request or an explicitly approved scope change; never
+silently add them to the current pull request.
+
+After the issue passes and the user confirms it for delivery, invoke
+`$deliver-issue` to implement the authorized correction batch, revalidate,
+independently re-review, commit, push, update the existing pull request, follow
+CI, and update the Issue Completion Record. Resume this workflow against the
+new head and reconcile prior finding IDs. A delivered `fix` does not publish
+the proposed inline comment.
+
+For findings marked `comment`, deduplicate against all existing threads
+immediately before publication. Attach each finding to the closest causal
+changed line. If the causal line cannot accept an inline comment, use a
+file-level thread or the nearest changed line and explain the anchor.
 
 Use this comment structure:
 
@@ -106,17 +157,19 @@ Resolve the Responsible Engineer from the issue's explicit GitHub implementer, f
 
 Treat `pending-review` only as a reviewer-attention signal. Do not tell the Responsible Engineer to resolve workflow-owned threads; this workflow retains verification and resolution ownership. If the label is unavailable, instruct the engineer to report that in the reply and still notify the reviewer rather than creating or substituting a label.
 
-Submit `REQUEST_CHANGES` when at least one accepted finding is explicitly blocking. Otherwise submit a comment review. Do not let severity alone silently decide whether the review blocks merging; state blocking status during adjudication.
+Submit `REQUEST_CHANGES` when at least one comment disposition is explicitly blocking. Otherwise submit a comment review. Do not let severity alone silently decide whether the review blocks merging; state blocking status during adjudication.
 
 ### 6. Verify Publication
 
 Re-read the submitted review and threads. Verify:
 
-- every accepted finding was posted exactly once;
+- every comment disposition was posted exactly once;
 - no rejected or unadjudicated finding was posted;
 - anchors, responsible-engineer tags, severity, evidence, fix guidance, code, and regression proof are present;
 - every correction request tells the Responsible Engineer to leave the thread open, apply `pending-review`, and notify the reviewer after pushing the correction and regression evidence;
 - the review event matches the accepted blocking status;
+- every fix disposition has a durable issue-owned delivery state and was not
+  also published as an inline comment;
 - resolved workflow-owned threads remain resolved at the current head;
 - limitations such as outdated anchors or missing permissions are explicit.
 

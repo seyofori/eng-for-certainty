@@ -70,6 +70,10 @@ explicitly permits the stated risk and it does not weaken acceptance or
 highest-risk proof, record it under `residual_risks` and return `CLEAN` for the
 checkpoint. Otherwise return `USER_DECISION`.
 
+`DEFER_FOLLOW_UP` is not a checkpoint route. It is available only to an outer
+review-to-merge workflow after pull-request publication; use `USER_DECISION`
+when a checkpoint finding cannot be corrected under its approved contract.
+
 A durable goal never changes these transitions. It supplies persistence only
 while an authorized transition exists.
 

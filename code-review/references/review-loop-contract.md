@@ -25,6 +25,11 @@ The governing issue must state:
 - the repeated-churn threshold that forces escalation; and
 - the ready-to-merge completion condition.
 
+An outer review-to-merge workflow must separately and explicitly state whether
+it owns `DEFER_FOLLOW_UP` issue, roadmap, pull-request, and revalidation writes.
+Do not infer that authority from the governing issue, a generic review request,
+or a durable goal.
+
 If the issue has no Review Loop Contract, return that gap to the composing
 workflow. Do not infer correction authority from the existence of a goal or
 from a general request to finish the work.
@@ -45,6 +50,7 @@ After normal verification, attach exactly one route to every non-refuted
 candidate:
 
 - `AUTO_CORRECT`
+- `DEFER_FOLLOW_UP`
 - `USER_DECISION`
 - `BLOCKED`
 - `RESIDUAL_RISK`
@@ -65,6 +71,31 @@ Use only when all of these are true:
 
 An `AUTO_CORRECT` route authorizes the delivery operator, not the reviewer, to
 apply the smallest correction and focused regression proof.
+
+### DEFER_FOLLOW_UP
+
+Use only for a `CONFIRMED` finding in an explicitly authorized
+review-to-merge workflow, and only when every condition below holds:
+
+- it does not violate the governing issue's acceptance criteria or promised
+  behaviour;
+- it does not weaken security, permissions, data integrity, migration safety,
+  operational reliability, or required validation;
+- it does not conceal a known regression;
+- the pull request remains independently releasable without the correction;
+- the finding can become a bounded coherent implementation, discovery, or
+  decision issue; and
+- severity is supporting evidence rather than the deferral rule.
+
+Return the root-cause evidence, why the current pull request remains safe, and
+the minimum affected surface and proof needed by the follow-up issue. The
+reviewer does not create or prioritize the issue. The composing workflow owns
+issue review, roadmap integration, pull-request publication, and current-head
+revalidation.
+
+Do not use `DEFER_FOLLOW_UP` during checkpoint review or standalone
+`$deliver-issue`. Without an outer workflow that owns the durable planning
+write and the resulting pull-request update, use `USER_DECISION` instead.
 
 ### USER_DECISION
 
@@ -98,10 +129,12 @@ When the review targets a delivery checkpoint:
   checkpoint.
 - `AUTO_CORRECT` returns to correction, invalidated proof, and re-review of the
   same checkpoint.
+- `DEFER_FOLLOW_UP` is not a checkpoint result and is not permitted during a
+  checkpoint review.
 - `USER_DECISION` pauses for user adjudication.
 - `BLOCKED` pauses for the named authority, access, credential, skill, external
   state, or prerequisite.
-- A finding routed `RESIDUAL_RISK` does not create a fifth checkpoint result.
+- A finding routed `RESIDUAL_RISK` does not create an additional checkpoint result.
   It permits a `CLEAN` result only when the governing issue explicitly
   classifies the assumption as non-blocking and it does not weaken acceptance
   or highest-risk proof. Otherwise the checkpoint result is `USER_DECISION`.
@@ -128,14 +161,17 @@ failure_scenario
 evidence
 suggested_correction
 route_rationale
+follow_up_issue_seed_when_applicable
 proof_invalidated_by_correction
 required_rereview_scope
 ```
 
 This delivery return may batch all `AUTO_CORRECT` items so the operator can
-apply one coherent correction batch. It overrides one-at-a-time presentation
-only for those automatically authorized items. Present `USER_DECISION` items
-through the composing workflow's user-decision discipline.
+apply one coherent correction batch and all `DEFER_FOLLOW_UP` items so the
+outer review-to-merge workflow can deduplicate them by root cause before issue
+creation. It overrides one-at-a-time presentation only for those explicitly
+authorized routes. Present `USER_DECISION` items through the composing
+workflow's user-decision discipline.
 
 ## Re-Review
 

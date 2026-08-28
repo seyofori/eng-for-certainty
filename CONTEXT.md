@@ -1,6 +1,6 @@
 # Engineering Skill Workflows
 
-This context defines the boundaries between issue preparation, code analysis, GitHub review workflows, and implementation evidence in the engineering skill family.
+This context defines the boundaries between issue preparation, code analysis, GitHub review workflows, and implementation evidence in the engineering skill family. Its workflow contracts are model- and harness-agnostic: they define roles, authority, evidence, and observable transitions rather than requiring a particular model or orchestration runtime.
 
 ## Language
 
@@ -22,7 +22,14 @@ canonical issue.
 _Avoid_: Shared checkout, canonical issue path
 
 **Issue Completion Record**:
-The durable evidence written to the canonical issue by the implementation or integration agent after final review and before the issue is marked done. It records the final status, completion date, affected surfaces, reconciled traceability evidence, validation results, review outcome, deviations, residual risks, deferred checks, and available branch, commit, or pull-request references.
+The durable evidence written to the canonical issue by the implementation or
+integration agent after final review and before the issue is marked done. It
+records the final status, completion date, affected surfaces, reviewed change
+head, reconciled traceability evidence, validation results, review outcome,
+deviations, residual risks, deferred checks, and available branch, commit, or
+pull-request references. A later current head may contain only independently
+verified issue, roadmap, or completion-evidence descendants; the record never
+attempts to name the commit that contains itself.
 _Avoid_: Completion summary, PR-only evidence, chat-only handoff
 
 **Runtime Acceptance Pass**:
@@ -97,6 +104,28 @@ A GitHub-specific workflow that uses **Code Review**, obtains a comment or fix
 disposition for each confirmed finding, publishes only comment dispositions,
 and routes fix dispositions through issue-owned delivery.
 _Avoid_: Code review, reviewer implementation, comment-only adjudication
+
+**Review-to-Merge Mode**:
+An explicitly authorized **Pull Request Review** mode that coordinates
+current-head review, issue-owned corrections, deferred follow-up capture,
+revalidation, merge-gate verification, merge, and guarded cleanup of the merged
+head branch. A generic pull-request review does not enter this mode implicitly.
+_Avoid_: Generic PR review, merge bot, branch-protection bypass
+
+**Deferred Follow-up Finding**:
+A confirmed pull-request finding that is safe to postpone because it does not
+violate the governing issue's acceptance criteria or promised behaviour, weaken
+security, permissions, data integrity, migration safety, operational
+reliability, or required validation, conceal a known regression, or prevent the
+pull request from remaining independently releasable. It must be expressible as
+a bounded coherent issue; severity alone never makes a finding deferrable.
+_Avoid_: Insignificant issue, ignored finding, Low-severity finding
+
+**Merged Branch Cleanup**:
+The post-merge removal of the exact remote head branch and, when safe, its local
+branch and linked worktree. Cleanup requires verified merge state, no dependent
+open pull request, and proof that no local or unpushed work would be lost.
+_Avoid_: Force-delete, wildcard deletion, unconditional worktree removal
 
 **Pull Request Creation**:
 The publication workflow that verifies completed local work against its issue and branch contract before pushing and opening or updating the GitHub pull request.
@@ -218,6 +247,10 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   slices use the verified canonical branch as their pull-request base; a
   **Stacked Pull Request** uses its preceding pull-request branch.
 - Every completed issue owns one **Issue Completion Record** in its canonical issue file; the implementation or integration agent writes it, and the final reviewer verifies it before the issue is marked done.
+- An **Issue Completion Record** binds acceptance and runtime proof to the last
+  behavior-changing reviewed head. A merge candidate may descend from that head
+  only through independently reviewed canonical issue, roadmap, or completion-
+  evidence commits whose diff does not invalidate the recorded proof.
 - Every issue that changes observable runtime behaviour owns a **Runtime
   Acceptance Pass**. A non-runtime issue records that the pass is not applicable
   and explains why.
@@ -272,6 +305,10 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   **Accepted Checkpoint Head** with no unresolved confirmed finding.
 - `AUTO_CORRECT` returns to the current checkpoint; `USER_DECISION` and
   `BLOCKED` pause delivery and leave any durable goal incomplete.
+- `DEFER_FOLLOW_UP` is a confirmed-finding route available only to an explicit
+  **Review-to-Merge Mode** that owns the durable issue, roadmap, pull-request,
+  and revalidation writes. It is not a checkpoint result and severity alone
+  cannot select it.
 - `RESIDUAL_RISK` is a finding route, never a checkpoint result. A checkpoint
   may return `CLEAN` with a recorded residual risk only when the governing issue
   explicitly permits it and acceptance or highest-risk proof is not weakened.
@@ -287,6 +324,42 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   the complete queue is adjudicated, findings marked `fix` pass through
   `$issue-review` before the **Delivery Operator** changes the existing pull
   request under its approved issue and branch contracts.
+- **Review-to-Merge Mode** may start only from an explicit request. It routes
+  deterministic in-scope corrections through issue review and the **Delivery
+  Operator**; user-owned decisions go through grilling before issue review and
+  delivery; missing authority, access, or prerequisites stop the workflow.
+- An existing pull request corrected by **Review-to-Merge Mode** keeps its
+  resolved published head and base as a narrow Branch Contract exception. The
+  governing issue records that identity, expected head SHA, push authority, and
+  dedicated-worktree mode; the workflow does not rename the branch, replace the
+  pull request, or rewrite its history merely to satisfy a naming convention.
+- **Review-to-Merge Mode** merges only the exact current head that passed its
+  acceptance, validation, review, thread, conflict, approval, and required-CI
+  gates. It never bypasses branch protection or uses an administrative override.
+- A **Deferred Follow-up Finding** becomes a canonical issue file and roadmap
+  entry on the pull-request branch before merge. That planning commit changes
+  the reviewed head, so the resulting head requires current validation and
+  review before it may merge.
+- Deferred follow-up findings are deduplicated by root cause and decomposed into
+  **Smallest Coherent Slices**. Each file must pass issue review as an
+  implementation-ready issue, or as a bounded discovery or decision issue with
+  an exact evidence outcome when later implementation still depends on product
+  research. The workflow follows the repository's existing roadmap status and
+  does not invent priority.
+- A pull request with a **Deferred Follow-up Finding** does not merge until its
+  issue file and roadmap entry are present on the pull-request branch. When the
+  repository has no canonical planning surface, the workflow pauses for a
+  decision instead of inventing one. When the branch cannot be updated, it
+  reports the exact access limitation and stops before merge instead of
+  substituting chat notes, pull-request comments, or an external tracker.
+- After a verified merge, **Review-to-Merge Mode** performs **Merged Branch
+  Cleanup**. It deletes the exact remote head branch only when it is not the
+  default, protected, shared, reused, or still required by an open pull request.
+  It removes a local branch and linked worktree only when the worktree is clean,
+  no untracked or unpushed work exists, and no commit would be lost. A stacked
+  pull request must first be safely retargeted through the provider without
+  rewriting its published head. A failed cleanup gate retains the affected
+  branch or worktree and reports the reason; cleanup never force-deletes.
 - **Pull Request Creation** consumes completed local work and produces a GitHub pull request; it does not implement or review the change.
 - **Pull Request Creation** derives draft or ready status from **Pull Request Readiness**; verified completed work is ready for review.
 - A **Responsible Engineer** applies **Pending Review** and notifies the reviewer after pushing requested corrections and regression evidence; the label does not transfer thread-resolution ownership.

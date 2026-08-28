@@ -1,6 +1,6 @@
 ---
 name: deliver-issue
-description: Deliver an approved, implementation-ready issue through implementation, issue-owned validation, independent code review, authorized correction loops, pull-request creation, and CI to a ready-to-merge handoff. Use when the user asks Codex to act as the delivery operator for a canonical issue, carry an issue through the complete build-review-PR-CI flow, or continue until only human approval and merge remain.
+description: Deliver an approved, implementation-ready issue through implementation, issue-owned validation, independent code review, authorized correction loops, pull-request creation, and CI to a ready-to-merge handoff. Use when the user asks an agent to act as the delivery operator for a canonical issue, carry an issue through the complete build-review-PR-CI flow, or continue until only human approval and merge remain.
 ---
 
 # Deliver Issue
@@ -69,6 +69,13 @@ policy, dependencies, or scope without the decision required by the issue's
 Review Loop Contract. It also does not authorize merge, auto-merge, deployment,
 reviewer assignment, or unrelated cleanup.
 
+When an outer **Review-to-Merge Mode** invokes this skill, this authority and
+completion boundary do not change. Deliver only the approved issue and return
+the exact ready-to-merge head and evidence to the outer workflow. The outer
+workflow owns `DEFER_FOLLOW_UP` planning artifacts, the final merge decision,
+and guarded post-merge branch cleanup; this skill must not absorb those writes
+or treat the outer workflow's merge authority as implementation authority.
+
 ## Goal And Gate Interaction
 
 A durable goal is a persistence mechanism, not transition authority.
@@ -97,6 +104,14 @@ exists.
 Create or verify the issue's declared implementation branch and dedicated
 linked worktree. Confirm its base ref and resolved SHA before editing. Preserve
 unrelated user work and stop on an ambiguous mixed worktree.
+
+When an outer review-to-merge workflow supplies an issue-approved **Existing PR
+Correction Contract**, use its exact published head and base as the branch
+identity instead of requiring a conventional replacement branch. Verify the
+current remote head SHA and push authority, then attach a dedicated linked
+worktree to that branch before editing. Do not rename the branch, open a
+replacement pull request, rewrite history, or proceed against a fork head that
+cannot receive the correction.
 
 Publish a short pre-work handoff containing the issue, branch, base ref, base
 SHA, runtime worktree path, selected validation, and triggered doctrine.
@@ -219,8 +234,9 @@ traceability outcomes, validation, checkpoint IDs and accepted head SHAs,
 checkpoint and final-review results, finding dispositions, deviations, residual
 risks, Runtime Acceptance scenario ledger and environment/build identities,
 design comparison and proxy blind spots when applicable, branch, and commit
-references. Keep the record concise and keep the status truthful when remote
-evidence is still pending.
+references. Identify the last behavior-changing reviewed head rather than
+trying to name the commit that contains the record itself. Keep the record
+concise and keep the status truthful when remote evidence is still pending.
 
 ### 8. Create Or Update The Pull Request
 
@@ -247,16 +263,22 @@ state.
   or externally owned gate, record the evidence and pause instead of editing
   unrelated code or claiming success.
 
-Any code, configuration, test, or documentation change made after review makes
-the previous final-review claim stale. Re-run risk-proportionate review and
-refresh the Issue Completion Record and PR evidence for the resulting head.
+Any production code, configuration, test, generated artifact, or product or
+operational documentation change made after review makes the previous
+acceptance and final-review proof stale. A later canonical issue, roadmap, or
+completion-evidence commit requires current-head review and record
+reconciliation, but it does not invalidate runtime proof unless its diff changes
+or contradicts the behavior, acceptance, test, or environment contract.
 
 ### 10. Reconcile The Ready-To-Merge Handoff
 
 Re-read the PR and verify its base, head, head SHA, commits, body, issue links,
 stack position, automated checks, and unresolved review state. Update the Issue
 Completion Record and every repository status surface required by the issue so
-they describe the same head and evidence.
+they describe the same reviewed change head and evidence. If the current head
+is later, verify that every descendant changes only canonical issue, roadmap,
+or completion-evidence surfaces and invalidates no recorded proof. Review the
+complete current head; do not create a self-referential evidence-update loop.
 
 ## Completion Condition
 
@@ -269,7 +291,8 @@ Declare delivery complete only when:
 - every required issue-owned Runtime Acceptance scenario passed against the
   exact current candidate, and every post-merge-only pass is linked as a
   downstream release gate with an owner and trigger;
-- the current head has passed independent `$code-review`;
+- the current head has passed independent `$code-review`, and any commits after
+  the recorded behavior-changing head are verified evidence-only descendants;
 - every confirmed finding has a recorded disposition and no unresolved blocker
   remains;
 - the pull request truthfully describes and points to the current head;

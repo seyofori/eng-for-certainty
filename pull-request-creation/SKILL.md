@@ -14,6 +14,8 @@ Do not implement missing work, perform code review, repair CI, invent evidence, 
 Resolve and read:
 
 - the canonical issue or implementation handoff;
+- any issue-approved Existing PR Correction Contract when publication updates
+  an already-open pull request;
 - its stable issue number and exact Branch Contract, including the declared
   pull-request base ref and worktree isolation mode;
 - the repository's branch, commit, PR-title, PR-template, and release conventions;
@@ -49,6 +51,14 @@ codex/<type>/<NN>-<short-kebab-description>
 
 If completed changes are still on the default branch, create the recorded branch before committing when that safely preserves the current work. If the current non-default branch conflicts with the Branch Contract, stop rather than silently publishing under another identity.
 
+For an explicit review-to-merge correction of an existing pull request, accept
+the issue's **Existing PR Correction Contract** as a narrow exception to the
+normal conventional branch name. Verify the exact repository, pull-request
+number, head owner and branch, base branch, expected pre-correction head SHA,
+push authority, and dedicated worktree. Update only that pull request; do not
+rename its branch or open a replacement pull request. Every other branch and
+worktree gate still applies.
+
 Verify that the branch descends from the Branch Contract's declared base and
 that the recorded resolved base SHA was truthful when implementation began.
 Independent slices use the verified canonical branch; stacked slices use the
@@ -79,9 +89,11 @@ Confirm that:
 - material deviations are reflected in the canonical issue;
 - no required evidence is represented by a placeholder, caveat, or unverified claim;
 - every required issue-owned Runtime Acceptance scenario passed against the
-  exact current commit or deployed build, every invalidated scenario was rerun,
-  and applicable auth and Design Conformance evidence is secret-free and
-  complete.
+  exact behavior-changing reviewed commit or deployed build, every invalidated
+  scenario was rerun, and applicable auth and Design Conformance evidence is
+  secret-free and complete. When the current head is later, verify that every
+  intervening commit changes only canonical issue, roadmap, or completion-
+  evidence surfaces and invalidates no recorded proof.
 
 If remote-only validation or a pull-request-created preview Runtime Acceptance
 Pass is the only remaining evidence, leave the issue `Needs Verification` and

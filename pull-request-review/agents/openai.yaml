@@ -1,4 +1,4 @@
 interface:
   display_name: "Pull Request Review"
-  short_description: "Review PRs and publish verified findings"
-  default_prompt: "Use $pull-request-review to review this GitHub pull request, reconcile existing threads, work through findings with me one at a time, and publish only findings I accept."
+  short_description: "Review, resolve, and conditionally merge PRs"
+  default_prompt: "Use $pull-request-review to take this GitHub pull request through explicit review-to-merge, including authorized fixes, durable follow-ups, merge gates, and guarded branch cleanup."

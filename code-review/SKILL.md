@@ -72,12 +72,15 @@ follow [Review Loop Contract](references/review-loop-contract.md) before Phase
 escalation authority.
 
 Keep every finder and verifier read-only. After completing the normal full
-discovery and verification pipeline, attach `AUTO_CORRECT`, `USER_DECISION`,
-`BLOCKED`, or `RESIDUAL_RISK` routing to every non-refuted result and return the
-complete record to the composing workflow. This mode overrides the ordinary
-one-at-a-time presentation only for findings the issue authorizes for automatic
-correction; it does not weaken evidence, review independence, or user ownership
-of material decisions.
+discovery and verification pipeline, attach `AUTO_CORRECT`,
+`DEFER_FOLLOW_UP`, `USER_DECISION`, `BLOCKED`, or `RESIDUAL_RISK` routing to
+every non-refuted result and return the complete record to the composing
+workflow. Use `DEFER_FOLLOW_UP` only when the composing workflow explicitly
+authorizes durable follow-up creation and the finding satisfies the reference
+contract. This mode overrides the ordinary one-at-a-time presentation only for
+findings the composing workflow authorizes for automatic correction or durable
+follow-up capture; it does not weaken evidence, review independence, or user
+ownership of material decisions.
 
 ### Checkpoint Review Mode
 
@@ -451,8 +454,9 @@ Present one confirmed finding at a time in severity and impact order. Give it a 
 
 In Composing Delivery Mode, use the reference contract's delivery return record
 instead. Complete the full queue before returning it, batch only
-`AUTO_CORRECT` findings for the operator, and route material decisions back to
-the user without treating delivery authorization as adjudication.
+`AUTO_CORRECT` findings for correction and `DEFER_FOLLOW_UP` findings for
+durable issue capture, and route material decisions back to the user without
+treating delivery authorization as adjudication.
 
 In Checkpoint Review Mode, return the checkpoint result to the composing
 workflow using the checkpoint reference contract. A clean checkpoint result

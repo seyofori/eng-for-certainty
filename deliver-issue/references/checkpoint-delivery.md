@@ -58,6 +58,11 @@ pause delivery and leave any durable goal incomplete.
 `RESIDUAL_RISK` remains a finding route. Record a permitted residual risk and
 return `CLEAN`; return `USER_DECISION` when the issue does not permit it.
 
+`DEFER_FOLLOW_UP` is not permitted inside checkpoint delivery. Return
+`USER_DECISION` when a confirmed checkpoint finding cannot be corrected under
+the approved issue; an outer review-to-merge workflow may consider durable
+follow-up only after pull-request publication.
+
 The existence of a goal never permits advancement, finding suppression,
 severity reduction, weakened proof, or silent selection of product meaning.
 

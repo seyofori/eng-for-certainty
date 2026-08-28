@@ -80,6 +80,10 @@ Use one `checkpoint_result`:
 residual risk is recorded under `residual_risks` and may coexist with `CLEAN`;
 an unpermitted residual risk produces `USER_DECISION`.
 
+`DEFER_FOLLOW_UP` is not permitted during checkpoint review. It requires an
+outer review-to-merge workflow that owns durable planning and pull-request
+writes; use `USER_DECISION` when such a route is proposed at a checkpoint.
+
 `CLEAN` requires:
 
 - no unresolved `CONFIRMED` finding;

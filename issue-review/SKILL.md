@@ -1,6 +1,6 @@
 ---
 name: issue-review
-description: Create or review an issue, ticket, feature file, bug report, roadmap item, or implementation handoff for agent readiness. Use when Codex is asked to draft, create, tighten, validate, rewrite, prepare, or assess an issue so another agent or engineer can implement it with zero clarifying questions, including decomposing feature-sized work into Smallest Coherent Slices and validating or assigning stable numbered Conventional Commit-style filenames.
+description: Create or review an issue, ticket, feature file, bug report, roadmap item, or implementation handoff for agent readiness. Use when asked to draft, create, tighten, validate, rewrite, prepare, or assess an issue so another agent or engineer can implement it with zero clarifying questions, including decomposing feature-sized work into Smallest Coherent Slices and validating or assigning stable numbered Conventional Commit-style filenames.
 ---
 
 # Issue Creation And Review
@@ -18,7 +18,7 @@ Require companion engineering doctrine when the issue touches its area:
 - Auth/security: cookies, sessions, CSRF, token handling, actor context, protected routes, permission checks, policy registries, secrets, or authorization boundaries.
 - Frontend engineering: frontend architecture, routes or screens, API adapters, hooks, flows or views, forms, client state, accessibility, client telemetry boundaries, or web/mobile testing.
 
-If the companion skill is available in the Codex session, use it. Otherwise use
+If the companion skill is available in the current agent environment, use it. Otherwise use
 the local repository's equivalent doctrine. If neither is available, name the
 missing doctrine and do not declare the issue implementation-ready.
 
@@ -78,6 +78,60 @@ For pending issue files, require the default filename format
 
 If the issue uses a domain term that conflicts with the local glossary or product docs, stop and ask the user to resolve the term before continuing.
 
+### Composed Review-to-Merge Authorization
+
+When an explicit review-to-merge workflow invokes this skill, that invocation
+supplies write authorization and shared-understanding confirmation only for a
+coherent issue update derived entirely from verified findings, the existing
+approved issue meaning, and discoverable repository conventions. Do not ask for
+a redundant confirmation before that mechanical write.
+
+If the update would choose or change product meaning, acceptance, scope,
+architecture, public contracts, schemas, migrations, permissions, security
+policy, dependencies, test strategy, planning-system structure, or priority,
+route it to `USER_DECISION`, use `$grilling`, and require explicit confirmation
+of the resolved issue before writing.
+
+Mechanically bounding a new deferred issue to the verified root cause, affected
+surface, and required proof is authorized when those facts have one coherent
+interpretation. Choosing among plausible product outcomes, broadening beyond
+that evidence, combining independent outcomes, or assigning priority remains a
+user-owned scope decision.
+
+### Deferred Follow-Up Issue Mode
+
+When an explicitly authorized pull-request review supplies findings routed
+`DEFER_FOLLOW_UP`, create durable planning artifacts without changing the
+implementation:
+
+- Re-verify that every supplied finding satisfies the composing workflow's
+  contract-based deferral criteria. Do not infer deferral from Low severity.
+- Search existing issue files, roadmap entries, and completed-work archives.
+  Reuse or update an exact existing issue instead of creating a duplicate.
+- Deduplicate new findings by root cause and create one **Smallest Coherent
+  Slice** per independently implementable outcome, not one file per review
+  comment or one catch-all cleanup issue.
+- Make each issue implementation-ready under this skill. When later
+  implementation depends on product research, create a bounded discovery or
+  decision issue with an exact evidence outcome rather than a vague issue or
+  placeholder.
+- Follow the repository's canonical filename, issue directory, roadmap or
+  index, and backlog status. Do not invent priority or silently create a new
+  planning system.
+- Record the reviewed pull request as a dependency and choose the eventual
+  Branch Contract against the repository's canonical post-merge base unless a
+  verified stack requires another base.
+- Write the complete issue files and roadmap or index update in one coherent
+  pass, then return their paths and stable identities to the composing
+  pull-request workflow for commit, push, PR-description update, and
+  current-head revalidation.
+- When an exact existing issue and roadmap entry already satisfy the finding,
+  verify and return them without manufacturing a no-op file change or commit.
+
+If no canonical planning surface exists or the supplied branch cannot receive
+the planning files, stop and return that exact gap. Do not substitute a chat
+note, pull-request comment, external tracker item, TODO, or invented directory.
+
 ## Decomposition And Branch Contract
 
 Every creation or review must make one explicit decomposition decision: either
@@ -108,6 +162,14 @@ Require each slice to record its exact conventional Branch Contract before imple
 ```
 
 Preserve a platform-required prefix such as `codex/`. The type and stable issue number must agree with the issue filename. A branch suggestion or pattern without the resolved name does not pass.
+
+For correction of an existing pull request under an explicit review-to-merge
+workflow, do not rename or replace its published head branch merely to satisfy
+the normal issue-derived naming convention. Instead, record an **Existing PR
+Correction Contract** containing the resolved repository, pull-request number,
+head owner and branch, base branch, reviewed head SHA, push authority, and
+dedicated-worktree mode. This exception authorizes updates only to that existing
+pull request. A fork without verified push authority is `BLOCKED`.
 
 Record the exact pull-request base ref and worktree isolation mode with the
 Branch Contract. Default to a dedicated linked worktree. Independent slices use
@@ -374,6 +436,8 @@ or CI result may support the record but cannot replace it.
 The record must contain:
 
 - the final status and completion date;
+- the last behavior-changing reviewed head to which acceptance, validation, and
+  Runtime Acceptance evidence bind;
 - the production, test, configuration, and documentation surfaces actually
   changed;
 - the reconciled result of every traceability row, including exact validation
@@ -393,6 +457,12 @@ The record must contain:
 
 The record is an evidence index, not an evidence dump. Prefer compact tables and
 durable links to raw CI, pull-request, test, or review evidence.
+
+Do not require the record to name the commit that contains the record itself.
+When later commits change only the canonical issue, roadmap or index, deferred
+issue files, or completion evidence, record the last behavior-changing reviewed
+head and require an independent current-head review to verify that every later
+commit is evidence-only and invalidates no recorded proof.
 
 The implementation or integration agent owns the write-back. The final reviewer
 must verify the completed record against the raw diff, test output, and review
@@ -540,6 +610,11 @@ Before editing, verify:
 - **Consistency**: acceptance criteria, scope, dependencies, implementation guardrails, and affected production owners agree; paths, symbols, and line references still exist.
 - **Issue identity**: pending issue filenames follow the discovered convention, use a stable number and valid Conventional Commit type, and all roadmap/index and sibling references resolve after any rename.
 - **Decomposition and branches**: the issue is one proven Smallest Coherent Slice or an ordered child pack; every slice owns exactly one Branch Contract and pull request, no feature-wide pull request spans multiple slices, only genuinely dependent pull requests are stacked, and every contract records its exact base ref and worktree isolation mode without a machine-specific path.
+- **Existing PR correction**: when the normal branch naming rule is bypassed for
+  review-to-merge correction, the Existing PR Correction Contract resolves one
+  exact repository, pull request, head owner and branch, base, expected head
+  SHA, push authority, and dedicated worktree without authorizing a replacement
+  PR or history rewrite.
 - **Traceability**: every independently observable criterion has one or more ledger rows with an exact production owner and exact test or justified manual verification; the post-implementation audit is named.
 - **Runtime acceptance**: every observable runtime change has a complete local
   plan, applicable exact-candidate preview or staging plan, real-boundary
@@ -560,6 +635,10 @@ Before editing, verify:
 - **Triggered doctrine**: apply the relevant observability, resilience, auth/security, and frontend requirements, including async transition tables and literal platform mechanisms when applicable.
 - **Execution and review**: parallel work has non-overlapping ownership, helper commits integrate into the canonical branch, combined validation is explicit, and the final clean-context `$code-review` passes are named.
 - **Review loop**: the issue explicitly selects automatic or human-gated delivery, routes mechanical corrections separately from user-owned decisions and blockers, requires current-head revalidation and re-review, and defines its churn threshold and ready-to-merge stopping condition.
+- **Deferred follow-up**: when invoked for `DEFER_FOLLOW_UP`, every finding is
+  still eligible under the contract, deduplicated by root cause, represented by
+  an issue-review-ready coherent issue or bounded discovery issue, and present
+  in the canonical roadmap without invented priority.
 - **Completion record**: the issue defines who writes and verifies its Issue Completion Record, which status-tracking surfaces must change with it, and which issue-owned or explicitly downstream gates control `Needs Verification` versus `Done`.
 - **Propagation**: reconcile inheriting issues, glossary/context entries, config consumers, shared invariants, and operational docs, or track an explicit prerequisite follow-up.
 - **Proof strength**: universal, negative, and mutual-exclusivity claims cover every element and direction; rounded displays agree with derived status indicators; literal runtime mechanisms are exercised or use a named proxy with its blind spot.

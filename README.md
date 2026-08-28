@@ -1,6 +1,6 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `65578413b65eaae7023ac6da238a8ed77208af77`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `b818826191ac2effd1f2dfd200032b1c40aa73a1`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
@@ -62,6 +62,25 @@ A durable goal supplies persistence, not authority. It cannot broaden
 automatic correction authority or cross an unresolved decision,
 blocker, or confirmed finding.
 
+## Review a pull request through merge
+
+Invoke  with an explicit review-to-merge request,
+for example:  A generic pull
+request review remains non-merging.
+
+The workflow verifies the complete finding queue before changing the
+pull request. Deterministic in-scope corrections pass through
+ and ; user-owned decisions pause for
+grilling. Eligible nonblocking findings become issue-review-ready files
+and canonical roadmap entries on the pull-request branch. The updated
+head is revalidated and re-reviewed before merge.
+
+Merge requires the exact reviewed head, green required checks, current
+issue evidence, satisfied review policy, and no unresolved blocker.
+After verified merge, the workflow deletes the exact remote head and
+clean local branch/worktree only when dependency and data-loss guards
+pass. It never bypasses protection or force-deletes.
+
 ## Install
 
 Install the skill family:
@@ -94,10 +113,10 @@ Issue review requires every companion triggered by the issue. The
 complete bundle above prevents a frontend, auth, resilience, or
 observability issue from being reviewed without its governing doctrine.
 
-Install pull request review with the complete review doctrine:
+Install pull request review with the complete review-to-merge doctrine:
 
 ```bash
-npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill pull-request-review
+npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill grilling   --skill issue-review   --skill pull-request-creation   --skill deliver-issue   --skill pull-request-review
 ```
 
 Install pull request creation:
