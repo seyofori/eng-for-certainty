@@ -345,7 +345,7 @@ When verification is split between standalone checks and a live or deployed inst
 If no local convention is visible, use:
 
 ```ts
-it(`
+test(`
   given <context>
   when  <action>
   then  <assertion>

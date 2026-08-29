@@ -345,7 +345,8 @@ Apply testing rules in this order: critical behavior correctness first, then fai
 - For API endpoints, test status codes, response payloads, and actionable error details.
 - API integration tests are mandatory for endpoint changes. Exercise the real app wiring end-to-end through route, service, and persistence layers; mock only true external systems at the boundary.
 - When work touches observability, resilience, auth/security, or frontend engineering/accessibility, apply the relevant companion skill and test those behaviors explicitly.
-- Prefer test names that state given/when/then behavior. If the repo has a local test naming style, follow it.
+- Follow the repo's local test declaration and naming style. If none exists, use
+  `test()` with multiline given/when/then test names.
 - For debugging: first build a deterministic repro loop. Convert the minimized repro into a regression test before fixing when a valid seam exists.
 - Test file naming should mirror production file naming, such as
   `[domain].route.test.ts`, `[domain].service.test.ts`, and

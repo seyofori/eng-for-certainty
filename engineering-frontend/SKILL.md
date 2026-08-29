@@ -341,7 +341,9 @@ Do not log component renders, routine effects, keystrokes, form values, every re
 - When client tracing changes, test origin-allowlisted context propagation, controlled-backend-only span export, client sampling and limits, meaningful span ownership, and the absence of sensitive attributes or baggage.
 - For frontend-first work, test production hooks, flows, views, components, accessibility behavior, and E2E journeys through the mock adapter; do not replace those layers with hook, query-result, flow, or component mocks.
 - Verify that mock adapter scenarios satisfy the exact production operation types and runtime contracts and cover every UI-relevant outcome without impossible states or random defaults.
-- Mirror production file naming. Follow the repo's naming style; otherwise prefer `test()` and given/when/then test bodies.
+- Mirror production file naming. Follow the repo's local test declaration and
+  naming style. If none exists, use `test()` with multiline given/when/then test
+  names.
 
 ## Build Sequence
 
