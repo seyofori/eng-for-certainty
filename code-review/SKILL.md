@@ -66,7 +66,7 @@ Run the review as six distinct phases:
 ### Composing Delivery Mode
 
 When `$code-review` is invoked as the read-only analysis engine inside
-`$deliver-issue` or another explicitly authorized delivery workflow, read and
+`$issue-delivery` or another explicitly authorized delivery workflow, read and
 follow [Review Loop Contract](references/review-loop-contract.md) before Phase
 0. The composing workflow must supply a governing issue with correction and
 escalation authority.
@@ -535,7 +535,7 @@ Keep a normal review read-only.
 
 - For GitHub inline publication, use `$pull-request-review` as the composing workflow. This skill supplies verified findings and evidence; the composing workflow owns existing-thread reconciliation, user adjudication, responsible-engineer tagging, fix snippets, GitHub writes, and post-write verification.
 - When this skill is already running inside `$pull-request-review`, return stable finding IDs and complete candidate records to that workflow after verification. Do not load the composing skill from inside this skill or post comments directly.
-- When this skill is running inside `$deliver-issue`, follow the Review Loop Contract, return routed finding records, and leave every correction, commit, push, PR, and CI action to that composing workflow.
+- When this skill is running inside `$issue-delivery`, follow the Review Loop Contract, return routed finding records, and leave every correction, commit, push, PR, and CI action to that composing workflow.
 - A direct request to review a GitHub PR and publish comments should select `$pull-request-review` before analysis. If it is unavailable, keep the review read-only and name the missing workflow instead of reconstructing GitHub mutation behavior here.
 - With an explicit fix request or `--fix`, present the review first, then begin a separate implementation phase. Do not auto-fix `CONDITIONAL` or `NEEDS_CONTEXT` candidates. Validate applied fixes and summarize the resulting changes.
 

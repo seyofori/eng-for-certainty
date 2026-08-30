@@ -279,7 +279,7 @@ Use issue length only as a review signal:
   cannot be compressed or moved to a linked appendix.
 - Do not split an issue solely to satisfy a line count.
 - Parent issue packs may be longer, but they must not become the direct
-  implementation target for `$deliver-issue`.
+  implementation target for `$issue-delivery`.
 
 For a substantial Smallest Coherent Slice, read
 [Review Checkpoint Planning](references/review-checkpoint-planning.md) and
@@ -537,12 +537,12 @@ agent workflow, or the existence of a durable goal. If automatic delivery is
 not intended, state that the workflow is human-gated and disable automatic
 correction explicitly.
 
-For an issue intended for `$deliver-issue`, include:
+For an issue intended for `$issue-delivery`, include:
 
 ```md
 ## Review Loop Contract
 
-- Delivery mode: `$deliver-issue` to a ready-to-merge handoff.
+- Delivery mode: `$issue-delivery` to a ready-to-merge handoff.
 - Review checkpoints: `<none; treat the issue as one delivery unit>` or
   `<ordered checkpoint IDs and outcomes>`.
 - Automatic transitions: implementation -> checkpoint validation ->
@@ -764,7 +764,7 @@ Record` only after implementation evidence exists; never prefill it with
 placeholders or predicted results.
 
 For immediate delivery, return the declared branch, base ref, resolved base SHA,
-runtime worktree path, and Approved Issue Commit SHA to `$deliver-issue`. For
+runtime worktree path, and Approved Issue Commit SHA to `$issue-delivery`. For
 backlog-only work, state that no implementation worktree was created. Never
 report an issue as ready for immediate implementation from a different branch or
 worktree than the one that contains its Approved Issue Commit.

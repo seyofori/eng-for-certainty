@@ -10,7 +10,7 @@ Use `$code-review` as the sole analysis engine. On the Dexwin engineering server
 Do not duplicate or weaken `code-review` doctrine. If neither the canonical skill nor its platform alias is available, or one of its triggered engineering dependencies is unavailable, stop and name every missing skill.
 
 **Review-to-Merge Mode** additionally requires `$issue-review`,
-`$deliver-issue`, and `$grilling`, together with the dependencies those skills
+`$issue-delivery`, and `$grilling`, together with the dependencies those skills
 declare. Resolve the complete required skill set before starting mutations and
 stop with one complete missing-dependency list rather than discovering gaps
 mid-workflow.
@@ -117,7 +117,7 @@ separate issue and pull request or an explicitly approved scope change; never
 silently add them to the current pull request.
 
 After the issue passes and the user confirms it for delivery, invoke
-`$deliver-issue` to implement the authorized correction batch, revalidate,
+`$issue-delivery` to implement the authorized correction batch, revalidate,
 independently re-review, commit, push, update the existing pull request, follow
 CI, and update the Issue Completion Record. Resume this workflow against the
 new head and reconcile prior finding IDs. A delivered `fix` does not publish

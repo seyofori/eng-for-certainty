@@ -65,7 +65,7 @@ design states, versions, platforms, and viewports named by its design contract.
 _Avoid_: Memory-based comparison, subjective looks-close check, universal pixel equality
 
 **Delivery Operator**:
-The composing workflow implemented by `$deliver-issue` that carries one
+The composing workflow implemented by `$issue-delivery` that carries one
 approved issue through implementation, issue-owned validation, independent code
 review, authorized correction loops, pull-request creation, and CI follow-up.
 It coordinates the owning skills without turning reviewer contexts into editors

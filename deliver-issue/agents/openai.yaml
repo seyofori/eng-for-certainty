@@ -1,4 +1,0 @@
-interface:
-  display_name: "Deliver Issue"
-  short_description: "Deliver an approved issue to a ready-to-merge PR"
-  default_prompt: "Use $deliver-issue to carry this approved issue to a ready-to-merge pull request: <issue path>"

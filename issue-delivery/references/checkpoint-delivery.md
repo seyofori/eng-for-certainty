@@ -78,6 +78,6 @@ Escalate to `USER_DECISION` when:
 
 ## After The Last Checkpoint
 
-Return to the main `$deliver-issue` workflow. Run complete issue-owned
+Return to the main `$issue-delivery` workflow. Run complete issue-owned
 validation and a final full integration review of the issue-base-to-current-head
 diff before creating or updating the pull request.

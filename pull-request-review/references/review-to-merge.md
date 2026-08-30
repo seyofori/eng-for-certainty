@@ -49,7 +49,7 @@ non-refuted result:
 
 - `AUTO_CORRECT`: collect deterministic, in-scope corrections into one coherent
   batch. Use `$issue-review` to verify the governing issue and scope, then
-  `$deliver-issue` to implement, validate, independently re-review, commit,
+  `$issue-delivery` to implement, validate, independently re-review, commit,
   push, update the existing pull request, follow CI, and update the Issue
   Completion Record. The explicit review-to-merge invocation supplies delivery
   authorization only while the issue remains unchanged in meaning and passes
@@ -60,7 +60,7 @@ non-refuted result:
   issue files and roadmap or index update as described below.
 - `USER_DECISION`: pause automatic transitions. Use `$grilling` to resolve one
   dependency-aware material decision at a time, then use `$issue-review` to
-  update or create the approved issue before `$deliver-issue` resumes. The
+  update or create the approved issue before `$issue-delivery` resumes. The
   initial invocation is not advance approval for a choice made during grilling.
 - `BLOCKED`: stop and name the missing authority, access, credential, skill,
   external state, or prerequisite and its owner or clearing trigger.

@@ -1,9 +1,9 @@
 ---
-name: deliver-issue
+name: issue-delivery
 description: Deliver an approved, implementation-ready issue through implementation, issue-owned validation, independent code review, authorized correction loops, pull-request creation, and CI to a ready-to-merge handoff. Use when the user asks an agent to act as the delivery operator for a canonical issue, carry an issue through the complete build-review-PR-CI flow, or continue until only human approval and merge remain.
 ---
 
-# Deliver Issue
+# Issue Delivery
 
 Act as the delivery operator for one approved Smallest Coherent Slice. Coordinate
 the engineering skills and repository tools that own each stage. Do not absorb

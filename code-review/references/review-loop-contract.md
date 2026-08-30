@@ -1,7 +1,7 @@
 # Review Loop Contract
 
 Use this contract only when `$code-review` is the read-only analysis engine
-inside a composing delivery workflow such as `$deliver-issue`. Direct code
+inside a composing delivery workflow such as `$issue-delivery`. Direct code
 review keeps the ordinary interactive Review Queue behavior from `SKILL.md`.
 
 ## Contents
@@ -94,7 +94,7 @@ issue review, roadmap integration, pull-request publication, and current-head
 revalidation.
 
 Do not use `DEFER_FOLLOW_UP` during checkpoint review or standalone
-`$deliver-issue`. Without an outer workflow that owns the durable planning
+`$issue-delivery`. Without an outer workflow that owns the durable planning
 write and the resulting pull-request update, use `USER_DECISION` instead.
 
 ### USER_DECISION

@@ -1,10 +1,16 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `5be141d52860ca7cdfc409f3859e2dab1522a7e2`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `e300a8d1333fb03d1b93c5000a4c8f7c377a1521`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
 See [CONTEXT.md](CONTEXT.md) for the shared workflow vocabulary and ownership boundaries.
+
+## Migration
+
+`deliver-issue` was renamed to `issue-delivery`. Update explicit
+`$deliver-issue` invocations to `$issue-delivery`, then remove or
+replace stale local `deliver-issue` installations.
 
 ## Included skills
 
@@ -16,7 +22,7 @@ See [CONTEXT.md](CONTEXT.md) for the shared workflow vocabulary and ownership bo
 - `code-review`
 - `pull-request-review`
 - `pull-request-creation`
-- `deliver-issue`
+- `issue-delivery`
 - `issue-review`
 - `grilling`
 - `domain-modeling`
@@ -36,20 +42,20 @@ Review Loop Contract, and any semantic review checkpoints.
 
 For immediate delivery, `issue-review` creates or verifies the
 selected slice's declared worktree after approval, writes and commits
-the final issue there, and hands that same context to `deliver-issue`.
+the final issue there, and hands that same context to `issue-delivery`.
 Backlog-only review does not create an idle implementation worktree.
 
 ### 2. Let the delivery operator run
 
-Invoke `deliver-issue` with the approved issue. It reuses the
+Invoke `issue-delivery` with the approved issue. It reuses the
 `issue-review` worktree for immediate delivery, or creates the
 backlog issue's declared worktree from a verified base containing the
 approved issue commit. It never starts implementation on a second
 branch. Use a durable goal when delivery should continue across turns:
 
-`/goal Use $deliver-issue to deliver <issue path> to a ready-to-merge handoff.`
+`/goal Use $issue-delivery to deliver <issue path> to a ready-to-merge handoff.`
 
-`deliver-issue` coordinates implementation, checkpoint validation,
+`issue-delivery` coordinates implementation, checkpoint validation,
 independent review, authorized corrections, revalidation, final
 integration review, pull-request creation or update, and CI
 follow-through.
@@ -123,7 +129,7 @@ observability issue from being reviewed without its governing doctrine.
 Install pull request review with the complete review-to-merge doctrine:
 
 ```bash
-npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill grilling   --skill issue-review   --skill pull-request-creation   --skill deliver-issue   --skill pull-request-review
+npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill grilling   --skill issue-review   --skill pull-request-creation   --skill issue-delivery   --skill pull-request-review
 ```
 
 Install pull request creation:
@@ -136,7 +142,7 @@ Install the delivery operator with its implementation, review, and
 publication doctrine:
 
 ```bash
-npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill pull-request-creation   --skill deliver-issue
+npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill pull-request-creation   --skill issue-delivery
 ```
 
 Install docs-backed grilling:
