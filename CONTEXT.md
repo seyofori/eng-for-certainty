@@ -21,6 +21,16 @@ resolved base SHA are recorded in the pre-work execution handoff, never in the
 canonical issue.
 _Avoid_: Shared checkout, canonical issue path
 
+**Approved Issue Commit**:
+The immutable commit that contains the finalized approved issue and its required
+planning-surface updates before production-code changes begin. Immediate
+review-and-delivery work creates it on the implementation branch; backlog work
+may inherit it from the verified pull-request base. Under an Existing PR
+Correction Contract, it precedes newly authorized correction edits rather than
+the pull request's already-existing implementation.
+_Avoid_: Uncommitted approved issue, issue-only delivery branch, inferred issue
+revision
+
 **Issue Completion Record**:
 The durable evidence written to the canonical issue by the implementation or
 integration agent after final review and before the issue is marked done. It
@@ -246,6 +256,37 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - A **Branch Contract** defaults to one **Implementation Worktree**. Independent
   slices use the verified canonical branch as their pull-request base; a
   **Stacked Pull Request** uses its preceding pull-request branch.
+- When issue review is the immediate preparation for implementation, the
+  **Implementation Worktree** is created after the slice identity and branch
+  contract are resolved but before the final issue write. The approved issue,
+  implementation, later issue updates, and completion evidence remain on that
+  branch so one pull request presents their latest states together.
+- Immediate-delivery intent is established from the initial request only when
+  that request clearly includes implementation or delivery after issue review.
+  Review-only or backlog intent is likewise established only when the request
+  says so clearly. Otherwise `$issue-review` asks whether implementation will
+  follow immediately before it creates a worktree or performs the final issue
+  write. It never infers intent from readiness status, priority, or the presence
+  of a **Branch Contract**.
+- `$issue-review` owns creating or verifying that worktree before its final issue
+  write. The **Delivery Operator** verifies the same branch, worktree, and
+  **Approved Issue Commit** and reuses them instead of creating a second
+  implementation context.
+- The **Approved Issue Commit** is created on the implementation branch before
+  production-code changes begin. Remote publication may wait for the normal
+  delivery workflow. Later issue corrections and completion evidence are
+  committed on the same branch. Under an Existing PR Correction Contract, the
+  commit precedes newly authorized correction edits rather than the pull
+  request's existing implementation.
+- If the **Delivery Operator** cannot prove that the declared implementation
+  branch contains the **Approved Issue Commit**, implementation does not begin.
+  The issue is reconciled onto that branch without destructive history
+  rewriting; the operator does not create or publish a second implementation
+  branch.
+- A backlog-only issue may be reviewed and integrated without creating its
+  eventual **Implementation Worktree**. Later implementation begins only from a
+  verified base that contains the **Approved Issue Commit**, then keeps all
+  subsequent issue and implementation changes on the implementation branch.
 - Every completed issue owns one **Issue Completion Record** in its canonical issue file; the implementation or integration agent writes it, and the final reviewer verifies it before the issue is marked done.
 - An **Issue Completion Record** binds acceptance and runtime proof to the last
   behavior-changing reviewed head. A merge candidate may descend from that head

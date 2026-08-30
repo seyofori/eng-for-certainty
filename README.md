@@ -1,6 +1,6 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `52af14f57fbd20e3b9381a77a6238c345e13d102`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `5be141d52860ca7cdfc409f3859e2dab1522a7e2`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
@@ -28,17 +28,24 @@ See [CONTEXT.md](CONTEXT.md) for the shared workflow vocabulary and ownership bo
 ### 1. Prepare and approve the issue
 
 Invoke `issue-review` with the idea, feature, or existing issue. It
-prepares the parent pack and Smallest Coherent Slices, including each
-slice's Branch Contract, acceptance criteria, traceability,
-change-control boundaries, Review Loop Contract, and any semantic
-review checkpoints.
+determines from the initial prompt whether implementation follows
+immediately, and asks when that intent is unclear. It prepares the
+parent pack and Smallest Coherent Slices, including each slice's Branch
+Contract, acceptance criteria, traceability, change-control boundaries,
+Review Loop Contract, and any semantic review checkpoints.
 
-Review and approve the resulting issue before delivery begins.
+For immediate delivery, `issue-review` creates or verifies the
+selected slice's declared worktree after approval, writes and commits
+the final issue there, and hands that same context to `deliver-issue`.
+Backlog-only review does not create an idle implementation worktree.
 
 ### 2. Let the delivery operator run
 
-Invoke `deliver-issue` with the approved issue. Use a durable goal
-when delivery should continue across turns:
+Invoke `deliver-issue` with the approved issue. It reuses the
+`issue-review` worktree for immediate delivery, or creates the
+backlog issue's declared worktree from a verified base containing the
+approved issue commit. It never starts implementation on a second
+branch. Use a durable goal when delivery should continue across turns:
 
 `/goal Use $deliver-issue to deliver <issue path> to a ready-to-merge handoff.`
 

@@ -47,10 +47,19 @@ Before changing code, verify that the canonical issue:
 - contains a Review Loop Contract; and
 - defines its Issue Completion Record and status-propagation requirements.
 
-Also inspect the current repository instructions, status, worktrees, default
+Also resolve the exact Approved Issue Commit. For immediate review-and-delivery,
+take its SHA, implementation branch, and worktree from the `$issue-review`
+handoff. For a previously integrated backlog issue, resolve the commit on the
+verified pull-request base that contains the approved issue revision. The
+declared implementation branch must contain that commit before production-code
+work begins. Under an Existing PR Correction Contract, it must contain the
+commit before newly authorized correction edits begin; the commit may postdate
+the pull request's existing implementation.
+
+Inspect the current repository instructions, status, worktrees, default
 branch, relevant source and tests, and the issue's claimed dependencies. Record
-the runtime worktree path and resolved base SHA in the execution handoff, not in
-the portable issue.
+the runtime worktree path, resolved base SHA, and Approved Issue Commit SHA in
+the execution handoff, not in the portable issue.
 
 If the issue is not ready, stop before implementation and report the exact
 missing or contradictory contract. Use `$issue-review` only when the user also
@@ -101,9 +110,23 @@ exists.
 
 ### 1. Establish The Implementation Context
 
-Create or verify the issue's declared implementation branch and dedicated
-linked worktree. Confirm its base ref and resolved SHA before editing. Preserve
-unrelated user work and stop on an ambiguous mixed worktree.
+When issue review immediately preceded delivery, verify and reuse the declared
+implementation branch and linked worktree established by `$issue-review`. Do not
+create a second implementation context. Confirm its base ref, resolved base SHA,
+and Approved Issue Commit before editing production code.
+
+For a previously integrated backlog issue, create or verify the declared branch
+and dedicated linked worktree from the verified base that contains the exact
+Approved Issue Commit. Confirm the commit is an ancestor of the implementation
+head and that the canonical issue content matches the approved revision.
+
+If the declared branch does not contain the Approved Issue Commit, do not begin
+implementation. A purely mechanical mismatch may be reconciled by applying the
+exact Approved Issue Commit to the declared branch when that preserves its base
+and Branch Contract and introduces no unrelated change. Otherwise pause for
+`$issue-review` or user direction. Never rewrite history, rename the declared
+branch, or create or publish a second implementation branch as a workaround.
+Preserve unrelated user work and stop on an ambiguous mixed worktree.
 
 When an outer review-to-merge workflow supplies an issue-approved **Existing PR
 Correction Contract**, use its exact published head and base as the branch
@@ -111,10 +134,12 @@ identity instead of requiring a conventional replacement branch. Verify the
 current remote head SHA and push authority, then attach a dedicated linked
 worktree to that branch before editing. Do not rename the branch, open a
 replacement pull request, rewrite history, or proceed against a fork head that
-cannot receive the correction.
+cannot receive the correction. Verify the Approved Issue Commit is present on
+that branch before applying any newly authorized correction.
 
 Publish a short pre-work handoff containing the issue, branch, base ref, base
-SHA, runtime worktree path, selected validation, and triggered doctrine.
+SHA, Approved Issue Commit SHA, runtime worktree path, selected validation, and
+triggered doctrine.
 
 ### 2. Deliver Review Checkpoints
 

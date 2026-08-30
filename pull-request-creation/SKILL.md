@@ -20,7 +20,8 @@ Resolve and read:
   pull-request base ref and worktree isolation mode;
 - the repository's branch, commit, PR-title, PR-template, and release conventions;
 - the intended base branch or preceding stacked-PR branch;
-- the pre-work execution handoff's runtime worktree path and resolved base SHA;
+- the pre-work execution handoff's runtime worktree path, resolved base SHA, and
+  Approved Issue Commit SHA;
 - the complete local diff, commits, untracked files, and validation evidence;
 - the traceability ledger, Runtime Acceptance Plan and current scenario evidence
   when observable runtime behaviour changed, and final independent review
@@ -49,7 +50,11 @@ Preserve a platform-required prefix, for example:
 codex/<type>/<NN>-<short-kebab-description>
 ```
 
-If completed changes are still on the default branch, create the recorded branch before committing when that safely preserves the current work. If the current non-default branch conflicts with the Branch Contract, stop rather than silently publishing under another identity.
+If issue-driven completed changes are still on the default branch or any branch
+that conflicts with the Branch Contract, stop rather than creating the recorded
+branch as a late publication repair. Reconcile the approved issue and
+implementation into their declared branch and worktree through the owning
+workflow before publication.
 
 For an explicit review-to-merge correction of an existing pull request, accept
 the issue's **Existing PR Correction Contract** as a narrow exception to the
@@ -74,6 +79,16 @@ the shared checkout without a recorded repository convention or explicit user
 direction as a Branch Contract deviation and stop to reconcile it before
 publication. The runtime path may differ across machines; never store it in the
 canonical issue.
+
+Verify that the Approved Issue Commit is an ancestor of the current head and
+that the latest canonical issue, implementation, later issue updates, and
+completion evidence all belong to this branch. For immediate review-and-
+delivery, confirm the issue commit predates production-code commits and the
+worktree matches the `$issue-review` handoff. Under an Existing PR Correction
+Contract, require it to predate newly authorized correction commits rather than
+the pull request's existing implementation. For backlog work, confirm the
+verified base contains the approved issue revision. Stop on missing ancestry or
+split branch ownership; do not open a second pull request to join the pieces.
 
 Inspect every changed and untracked file. Reject unrelated work, unexplained generated artifacts, accidental binaries, stale planning changes, or ambiguous ownership. Never default to staging an entire mixed worktree.
 

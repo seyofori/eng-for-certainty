@@ -29,17 +29,70 @@ Ask for a target path only when those facts cannot be discovered safely.
 ## Workflow
 
 1. **Establish the issue input**: read the existing issue, or gather the approved problem and decisions for a new issue; identify the requested change, claimed files, dependencies, and current structure.
-2. **Discover repo conventions**: inspect local docs and examples before applying generic rules, including issue filename rules and the next unused issue reference.
-3. **Verify claims against code**: check paths, symbols, line references, tests, schemas, commands, and stated behavior.
-4. **Decompose and name the work**: prove the issue is one Smallest Coherent Slice or create an ordered child pack, then assign every slice its exact Branch Contract and PR base.
-5. **Resolve gaps with `$grilling`**: inspect discoverable facts, investigate empirical unknowns, map all user-owned decisions by dependency, and work through one material decision at a time using stable question IDs.
-6. **Accumulate answers**: maintain the decision map across items; do not edit the issue during the review.
-7. **Build traceability and execution**: map each acceptance criterion to its production owner and exact verification, define safe sequential or parallel implementation ownership, and set the Review Loop Contract for correction and escalation.
-8. **Control issue attention**: keep the implementation contract concise, separate reusable doctrine and raw evidence, and define semantic review checkpoints when the slice is substantial.
-9. **Cross-validate**: check the resolved issue, traceability ledger, checkpoint plan, execution plan, and conditional gates for contradictions and missing dependencies.
-10. **Write once**: rewrite the issue only after every gate passes and the full picture is consistent.
+2. **Determine delivery intent**: use the initial request when it clearly says that implementation will or will not follow immediately; otherwise ask before creating a worktree or performing the final issue write.
+3. **Discover repo conventions**: inspect local docs and examples before applying generic rules, including issue filename rules and the next unused issue reference.
+4. **Verify claims against code**: check paths, symbols, line references, tests, schemas, commands, and stated behavior.
+5. **Decompose and name the work**: prove the issue is one Smallest Coherent Slice or create an ordered child pack, then assign every slice its exact Branch Contract and PR base.
+6. **Resolve gaps with `$grilling`**: inspect discoverable facts, investigate empirical unknowns, map all user-owned decisions by dependency, and work through one material decision at a time using stable question IDs.
+7. **Accumulate answers**: maintain the decision map across items; do not edit the issue during the review.
+8. **Build traceability and execution**: map each acceptance criterion to its production owner and exact verification, define safe sequential or parallel implementation ownership, and set the Review Loop Contract for correction and escalation.
+9. **Control issue attention**: keep the implementation contract concise, separate reusable doctrine and raw evidence, and define semantic review checkpoints when the slice is substantial.
+10. **Cross-validate**: check the resolved issue, traceability ledger, checkpoint plan, execution plan, and conditional gates for contradictions and missing dependencies.
+11. **Establish immediate-delivery isolation**: after shared understanding is confirmed and every selected slice has its exact Branch Contract, create or verify each selected implementation branch and linked worktree before the final write.
+12. **Write and anchor once**: write the resolved issue and required planning updates in the owning context. For immediate delivery, commit them on the implementation branch before production-code changes begin.
 
 Never write placeholders, TODOs, partial decisions, or "TBD" sections to the issue. The file is either unchanged while review is in progress or fully resolved when review is complete.
+
+## Delivery Intent And Issue Ownership
+
+Classify the review before the final write:
+
+- **Immediate delivery**: the initial request clearly asks to review or prepare
+  the issue and then implement, deliver, build, fix, or carry it through.
+- **Backlog only**: the initial request explicitly says review only, planning
+  only, backlog capture, or not to implement.
+- **Unresolved intent**: neither outcome is explicit. A request such as "review
+  this issue" or "create this issue" does not settle what follows. Ask whether
+  implementation will follow immediately. Do not silently choose a default.
+
+When immediate delivery could refer to more than one resulting slice and the
+initial request does not select them, ask which slices will begin now. Do not
+create worktrees for every child merely because the parent pack is ready.
+
+Do not infer immediate delivery from `Ready` status, priority, a roadmap
+position, a complete Branch Contract, or the issue appearing implementation-
+ready. A composing workflow that already declares its branch and delivery mode,
+such as review-to-merge correction or deferred-follow-up capture, supplies this
+intent explicitly; do not ask again.
+
+For every Smallest Coherent Slice selected for immediate delivery:
+
+1. Finish discovery, decomposition, decisions, cross-validation, and shared-
+   understanding confirmation before mutating git state.
+2. Verify the declared base ref and resolve its SHA. Inspect repository status
+   and `git worktree list --porcelain`.
+3. Create or verify the exact Branch Contract branch and its dedicated linked
+   worktree. If the branch belongs to another worktree, contains ambiguous work,
+   or cannot be created from the declared base without changing the contract,
+   stop instead of inventing another branch.
+4. Perform the final issue, roadmap, index, appendix, and required reference
+   writes inside that worktree. Do not finalize them on a planning branch and
+   transfer implementation elsewhere.
+5. Record the runtime worktree path and resolved base SHA in the execution
+   handoff, never in the portable issue.
+6. Stage only the finalized issue and its required planning-surface updates,
+   then create one coherent Approved Issue Commit on the implementation branch.
+   Do not begin production-code changes before that commit exists. Do not push
+   merely because issue review completed; publication remains separately
+   authorized or owned by the composing delivery workflow. Under an Existing PR
+   Correction Contract, create the commit before newly authorized correction
+   edits; it need not predate the pull request's existing implementation.
+
+For backlog-only work, do not create the eventual implementation worktree merely
+because the issue is ready. Write through the repository's authorized planning
+workflow. When implementation is requested later, its branch must start from a
+verified base containing the exact Approved Issue Commit, and every later issue
+update remains with that implementation branch.
 
 ## Convention Discovery
 
@@ -610,6 +663,11 @@ Before editing, verify:
 - **Consistency**: acceptance criteria, scope, dependencies, implementation guardrails, and affected production owners agree; paths, symbols, and line references still exist.
 - **Issue identity**: pending issue filenames follow the discovered convention, use a stable number and valid Conventional Commit type, and all roadmap/index and sibling references resolve after any rename.
 - **Decomposition and branches**: the issue is one proven Smallest Coherent Slice or an ordered child pack; every slice owns exactly one Branch Contract and pull request, no feature-wide pull request spans multiple slices, only genuinely dependent pull requests are stacked, and every contract records its exact base ref and worktree isolation mode without a machine-specific path.
+- **Delivery continuity**: immediate or backlog intent is explicit; ambiguous
+  initial prompts were resolved by asking; every slice selected for immediate
+  delivery owns the worktree used for the final issue write; and its Approved
+  Issue Commit exists on the declared implementation branch before production-
+  code work. Backlog-only issues did not create idle implementation worktrees.
 - **Existing PR correction**: when the normal branch naming rule is bypassed for
   review-to-merge correction, the Existing PR Correction Contract resolves one
   exact repository, pull request, head owner and branch, base, expected head
@@ -704,3 +762,9 @@ sections. Populate
 and propagation rules during readiness review. Add the actual `Issue Completion
 Record` only after implementation evidence exists; never prefill it with
 placeholders or predicted results.
+
+For immediate delivery, return the declared branch, base ref, resolved base SHA,
+runtime worktree path, and Approved Issue Commit SHA to `$deliver-issue`. For
+backlog-only work, state that no implementation worktree was created. Never
+report an issue as ready for immediate implementation from a different branch or
+worktree than the one that contains its Approved Issue Commit.

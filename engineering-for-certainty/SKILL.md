@@ -153,6 +153,14 @@ Use explicit version-control semantics so project history communicates intent an
 - Default each planned issue implementation to its own dedicated linked git
   worktree, including single-threaded work. Preserve a different repository
   convention or the user's explicit direction to use the shared checkout.
+- When issue review will flow directly into implementation, determine that
+  intent from the initial request only when it is explicit; otherwise ask. After
+  the exact Branch Contract is resolved and shared understanding is confirmed,
+  finalize and commit the approved issue in its implementation worktree before
+  production-code changes begin. Delivery reuses that worktree and branch.
+- For backlog-only issue work, do not create an idle implementation worktree.
+  Later implementation starts from a verified base containing the exact
+  Approved Issue Commit and keeps later issue and code changes together.
 - Create the worktree from the Branch Contract's declared pull-request base:
   the verified canonical branch for an independent slice, or the preceding
   pull-request branch for a stacked slice. Do not replace a stacked base with
@@ -161,9 +169,9 @@ Use explicit version-control semantics so project history communicates intent an
   remote-tracking ref such as `origin/main` current unless it was fetched or
   otherwise verified when that network action is necessary and authorized.
 - Record the portable base ref and worktree isolation mode in the canonical
-  issue. Record the machine-specific worktree path and resolved base SHA in the
-  pre-work execution handoff; never store an absolute local path in the
-  canonical issue.
+  issue. Record the machine-specific worktree path, resolved base SHA, and
+  Approved Issue Commit SHA in the pre-work execution handoff; never store an
+  absolute local path in the canonical issue.
 
 ### Semantic Versioning
 
@@ -480,8 +488,9 @@ Before declaring work complete, verify:
   feature is an explicit issue pack whose independent slices target the
   canonical branch and whose genuinely dependent slices use a recorded stack.
 - Planned issue implementation used its dedicated worktree and declared,
-  verified base, or the repository convention or user-approved exception is
-  recorded.
+  verified base; the branch contains the Approved Issue Commit; immediate
+  review-and-delivery reused the issue-review worktree; or the repository
+  convention or user-approved exception is recorded.
 - Any skipped doctrine rule has a concrete, documented reason.
 - Relevant unit and integration tests pass for the changed scope.
 - Every database schema or data migration passed its isolated local Migration Proof Harness, or the work remains unverified.
