@@ -231,6 +231,10 @@ _Avoid_: Unlimited best-effort telemetry, one undifferentiated budget, assumed c
 The issue's named GitHub implementer, falling back to the pull-request author when no implementer is named.
 _Avoid_: Last line author, inferred owner
 
+**Learning Feedback**:
+A short, simple-language, bullet-point coaching summary for the **Responsible Engineer** that records verified, reusable lessons within the engineer's control from a **Pull Request Review**.
+_Avoid_: Review finding, performance evaluation, blame report
+
 **Clean Review Context**:
 A fresh review context that receives the raw change and governing contracts without another reviewer's expected verdict.
 _Avoid_: Clean worktree, pre-seeded verdict
@@ -404,6 +408,13 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - **Pull Request Creation** consumes completed local work and produces a GitHub pull request; it does not implement or review the change.
 - **Pull Request Creation** derives draft or ready status from **Pull Request Readiness**; verified completed work is ready for review.
 - A **Responsible Engineer** applies **Pending Review** and notifies the reviewer after pushing requested corrections and regression evidence; the label does not transfer thread-resolution ownership.
+- A **Pull Request Review** produces **Learning Feedback** for its **Responsible Engineer** regardless of who authored the pull request. When the requesting user authored it, the feedback remains in the pull-request conversation and review closeout, but the workflow does not send that user a redundant Slack message.
+- **Learning Feedback** includes a serious first-time mistake when its lesson is reusable, but excludes rejected or uncertain findings, requirement ambiguity, external tool or environment failures, and isolated mechanical mistakes that do not reveal a useful habit.
+- **Learning Feedback** leads with improvements and may name a specific good practice to repeat when review evidence supports it; it never requires balanced praise or invents a positive point.
+- **Learning Feedback** is published once per settled review against the latest reviewed pull-request head, after every finding has a disposition and every authorized correction has been re-reviewed; it does not wait for merge.
+- **Learning Feedback** is one top-level comment in the pull-request conversation, separate from inline finding threads; the workflow does not require or create a GitHub issue to hold it.
+- When the requesting user is not the **Responsible Engineer**, the workflow also sends **Learning Feedback** privately through Slack only after resolving the engineer's exact Slack identity. Missing Slack access or identity mapping skips that delivery with an explicit report; public Slack delivery requires a separate request.
+- Invoking **Pull Request Review** authorizes automatic pull-request and eligible private Slack delivery of qualifying **Learning Feedback** after the review settles. The workflow publishes no empty summary, verifies each attempted delivery, reports every skipped or failed destination, and never blocks review or merge solely because Slack delivery is unavailable.
 - A **Stacked Pull Request** depends on exactly one earlier base in an ordered stack; independent slices target the canonical base branch directly.
 - A **Code Review** produces one **Review Queue** after investigating, verifying, deduplicating, and ranking the complete finding landscape.
 - Every current item from a **Review Queue** or **Decision Queue** displays **Queue Progress** as `Finding 11 of 30 - 19 remain after this` or `Decision 11 of 30 - 19 remain after this`.

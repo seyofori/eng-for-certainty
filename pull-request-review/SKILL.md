@@ -1,11 +1,11 @@
 ---
 name: pull-request-review
-description: Review a GitHub pull request through the evidence-verified code-review pipeline, reconcile existing threads, adjudicate comments or issue-owned fixes, and optionally carry an explicitly authorized review-to-merge workflow through durable follow-ups, merge, and guarded branch cleanup. Use for GitHub PR review conversations or an explicit request to review a PR through merge.
+description: Review a GitHub pull request through the evidence-verified code-review pipeline, reconcile existing threads, adjudicate comments or issue-owned fixes, deliver simple learning feedback to the responsible engineer, and optionally carry an explicitly authorized review-to-merge workflow through durable follow-ups, merge, and guarded branch cleanup. Use for GitHub PR review conversations or an explicit request to review a PR through merge.
 ---
 
 # Pull Request Review
 
-Use `$code-review` as the sole analysis engine. On the Dexwin engineering server, use `code-review-dexwin`, its execution alias, as the same canonical analysis engine. Own the GitHub-specific workflow: resolve the pull request, reconcile existing threads, adjudicate new verified findings, coordinate issue-owned correction when authorized, publish selected comments, and verify the resulting review state.
+Use `$code-review` as the sole analysis engine. On the Dexwin engineering server, use `code-review-dexwin`, its execution alias, as the same canonical analysis engine. Own the GitHub-specific workflow: resolve the pull request, reconcile existing threads, adjudicate new verified findings, coordinate issue-owned correction when authorized, publish selected comments, deliver qualifying learning feedback, and verify the resulting review state.
 
 Do not duplicate or weaken `code-review` doctrine. If neither the canonical skill nor its platform alias is available, or one of its triggered engineering dependencies is unavailable, stop and name every missing skill.
 
@@ -24,6 +24,13 @@ handoff until the resulting issue is confirmed for delivery. Never post
 rejected, unreviewed, `CONDITIONAL`, or `NEEDS_CONTEXT` candidates. Thread
 reconciliation may perform only the pre-authorized workflow-owned reply and
 resolution writes described below.
+
+Unless the user opts out, invoking this skill also authorizes one automatic
+top-level pull-request learning-feedback comment and one eligible private Slack
+message after the review settles. This authorization covers only the verified,
+bounded content and destinations in **Deliver Learning Feedback** below. It
+never authorizes a public Slack post, an unverified recipient, or a performance
+assessment.
 
 Treat thread reconciliation as part of every invocation; do not require a separate request. Automatically reply to and resolve only workflow-owned threads that are verified as fixed or obsolete. Inspect human-owned threads, but never resolve them automatically.
 
@@ -45,6 +52,8 @@ unrelated cleanup in either mode.
 - Honor an explicit repository and PR number or URL.
 - For "this PR" or the current branch, resolve the local repository, branch, remote, and associated PR.
 - Record the repository, PR number, base branch, head branch, current head SHA, author, issue links, and requested reviewers.
+- Resolve the Responsible Engineer from the governing issue's explicit GitHub implementer when one exists, falling back to the pull-request author. Honor an explicit user override and never infer ownership from `git blame`.
+- Establish whether the requesting user is the Responsible Engineer only from an explicit statement or verified account mapping. Never guess from a display name. When this identity relationship is unknown, treat private Slack delivery as unavailable and report why.
 - Use the configured GitHub connector for structured PR metadata and patch context when available. Use thread-aware GitHub GraphQL access when resolution state, outdated state, line anchors, replies, or thread mutation matters.
 - Stop if the repository or PR remains ambiguous, authentication is missing, or the complete diff cannot be recovered.
 
@@ -159,7 +168,70 @@ Treat `pending-review` only as a reviewer-attention signal. Do not tell the Resp
 
 Submit `REQUEST_CHANGES` when at least one comment disposition is explicitly blocking. Otherwise submit a comment review. Do not let severity alone silently decide whether the review blocks merging; state blocking status during adjudication.
 
-### 6. Verify Publication
+### 6. Deliver Learning Feedback
+
+After every verified finding has a disposition and every authorized correction
+has been re-reviewed against the latest pull-request head, derive one learning
+summary for the Responsible Engineer. Do not wait for merge. A review halted on
+an unresolved finding, user decision, or correction cycle is not settled and
+does not publish learning feedback yet.
+
+Include only lessons that are:
+
+- supported by a verified finding in its final adjudicated form;
+- within the Responsible Engineer's reasonable control; and
+- reusable in future work.
+
+A serious first-time mistake qualifies. Exclude rejected, refuted,
+`CONDITIONAL`, and `NEEDS_CONTEXT` findings; requirement ambiguity; external
+tool, access, or environment failures; and isolated mechanical mistakes that
+do not reveal a useful habit. Lead with improvements. Add a `Keep doing` bullet
+only for a specific good practice supported by review evidence; never invent
+praise or require positive and negative balance.
+
+Use common words, short sentences, and one idea per bullet. Define an
+unavoidable unfamiliar term when first used. Link to an existing detailed
+finding thread when one exists instead of copying its full technical evidence.
+Use this shape:
+
+```markdown
+@responsible-engineer **Learning feedback**
+
+- **Lesson: <short title>**
+  - **What happened:** <plain description of the mistake>
+  - **Why it matters:** <plain consequence>
+  - **Next time:** <specific practice to apply in future work>
+
+- **Keep doing:** <specific evidence-backed practice, only when present>
+
+Reviewed head: `<reviewed-head-sha>`
+
+<!-- pull-request-review:learning-feedback;head=<reviewed-head-sha> -->
+```
+
+Repeat the nested improvement bullets for each distinct lesson. Keep the
+summary short and deduplicate lessons by root cause. When no lesson qualifies,
+publish nothing and report that outcome. Before posting, search the pull-request
+conversation for the stable marker and reviewed head. Do not duplicate an
+already published summary; if a later settled head changes the lessons, post
+one new summary for that head rather than editing history silently.
+
+Post the summary once as a top-level pull-request comment, separate from inline
+finding threads. Do not require or create a GitHub issue for this feedback. The
+comment is required even when the requesting user authored the pull request.
+
+When the requesting user is not the Responsible Engineer, use an available
+Slack integration to resolve the engineer's exact Slack identity and send the
+same learning bullets privately with the pull-request link and reviewed head;
+omit the GitHub tag and hidden marker. Treat Slack as available only when the
+integration can inspect the exact recipient conversation, deduplicate by
+pull-request link and reviewed head, and read back the sent message. Never guess
+from a name, send to a public channel, or substitute another recipient. When
+the user authored the pull request, Slack access is absent, the exact identity
+cannot be verified, or delivery fails, skip Slack and report the exact reason.
+Slack availability never blocks review, merge readiness, or merge.
+
+### 7. Verify Publication
 
 Re-read the submitted review and threads. Verify:
 
@@ -170,14 +242,29 @@ Re-read the submitted review and threads. Verify:
 - the review event matches the accepted blocking status;
 - every fix disposition has a durable issue-owned delivery state and was not
   also published as an inline comment;
+- qualifying learning feedback exists exactly once as a top-level comment for
+  the latest settled reviewed head, or the no-qualifying-lesson outcome is
+  explicit;
+- the learning comment uses simple improvement bullets, contains no uncertain
+  or out-of-control claim, and includes only evidence-backed `Keep doing`
+  guidance;
+- eligible private Slack feedback was read back from the exact verified
+  recipient with the pull-request link, or its skipped, failed, or unverified
+  status and reason are explicit;
 - resolved workflow-owned threads remain resolved at the current head;
 - limitations such as outdated anchors or missing permissions are explicit.
 
-Report posted thread links or IDs, reconciled threads, unresolved human-owned threads, validation performed, and any verified findings still awaiting adjudication.
+Report posted thread links or IDs, the learning-comment link, Slack recipient
+and verified delivery status without exposing private message content beyond
+the agreed summary, reconciled threads, unresolved human-owned threads,
+validation performed, and any verified findings still awaiting adjudication.
 
 ## Failure Handling
 
 - If GitHub thread state is unavailable through a flat comment API, use thread-aware GraphQL rather than guessing from comments.
 - If a comment cannot be anchored after the head changes, refresh the diff once and retry with the new line. Do not publish to an unrelated line.
 - If authentication, permissions, rate limits, or API failures interrupt publication, stop and report exactly which accepted findings were and were not posted.
+- If the top-level learning comment fails, report it as incomplete review
+  publication. If Slack delivery fails or cannot be verified, report that
+  limitation and continue without weakening review or merge gates.
 - Never mark a review successful from the mutation response alone; verify the resulting GitHub state.

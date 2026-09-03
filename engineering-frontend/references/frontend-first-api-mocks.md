@@ -313,99 +313,46 @@ constructing one here when its composition boundary already provides one.
 
 ## Hook And Flow
 
-Hooks import the stable function directly and expose application-owned state:
+Mock-backed and production-backed mutations use the same hook contract. Read
+and follow [Result Mutation Hooks](result-mutation-hooks.md) for the canonical
+shared settlement helper, hook state mapper, and flow pattern. The mock changes
+only the adapter implementation selected by the domain API entrypoint.
+
+The hook imports the shared settlement contract instead of defining its own:
 
 ```ts
-type CreateOrderState =
-  | { status: "idle" }
-  | { status: "submitting" }
-  | { status: "succeeded"; order: CreateOrderOutput }
-  | {
-      status: "failed";
-      failure: CreateOrderFailure;
-      retry: () => void;
-    };
-
-function mapCreateOrderState(
-  mutation: Pick<
-    UseMutationResult<
-      Result<CreateOrderOutput, CreateOrderFailure>,
-      unknown,
-      CreateOrderInput
-    >,
-    | "data"
-    | "error"
-    | "isError"
-    | "isPending"
-    | "mutate"
-    | "variables"
-  >,
-): CreateOrderState {
-  const failedState = (
-    failure: CreateOrderFailure,
-  ): CreateOrderState => {
-    const failedInput = mutation.variables;
-
-    if (failedInput === undefined) {
-      throw new Error("Failed create-order mutation has no input");
-    }
-
-    return {
-      status: "failed",
-      failure,
-      retry: () => mutation.mutate(failedInput),
-    };
-  };
-
-  if (mutation.isError) {
-    return failedState(mapUnexpectedCreateOrderFailure(mutation.error));
-  }
-
-  if (mutation.data?.isErr()) {
-    return failedState(mutation.data.error);
-  }
-
-  if (mutation.data?.isOk()) {
-    return { status: "succeeded", order: mutation.data.value };
-  }
-
-  return mutation.isPending
-    ? { status: "submitting" }
-    : { status: "idle" };
-}
+import {
+  settleMutation,
+  type SettledMutation,
+} from "#lib/settle-mutation";
 
 export function useCreateOrder() {
-  const mutation = useMutation({ mutationFn: createOrder });
+  const mutation = useMutation<
+    Result<CreateOrderOutput, CreateOrderFailure>,
+    unknown,
+    CreateOrderInput
+  >({
+    mutationFn: async (input) => await createOrder(input),
+  });
+
+  const run = (
+    input: CreateOrderInput,
+  ): Promise<
+    SettledMutation<CreateOrderOutput, CreateOrderFailure>
+  > => settleMutation(() => mutation.mutateAsync(input));
 
   return {
     state: mapCreateOrderState(mutation),
-    submit: mutation.mutateAsync,
+    run,
     reset: mutation.reset,
   };
 }
 ```
 
-The flow, not the hook, decides which UI to render and matches every state:
-
-```tsx
-return match(createOrder.state)
-  .with({ status: "idle" }, () =>
-    <CreateOrderView onSubmit={createOrder.submit} />,
-  )
-  .with({ status: "submitting" }, () =>
-    <CreateOrderView submitting onSubmit={createOrder.submit} />,
-  )
-  .with({ status: "succeeded" }, ({ order }) =>
-    <OrderCreatedView order={order} />,
-  )
-  .with({ status: "failed" }, ({ failure, retry }) =>
-    <CreateOrderErrorView
-      failure={failure}
-      onRetry={retry}
-    />,
-  )
-  .exhaustive();
-```
+`createOrder` is the same stable exported function in production and mock mode,
+so this hook and every consuming flow remain unchanged. The state mapper and
+flow come from the generic mutation pattern; do not fork them into mock-owned
+variants.
 
 ## Tests
 

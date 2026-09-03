@@ -133,6 +133,12 @@ When exact follow-up reuse or a PR-description-only update leaves the Git head
 unchanged, keep the existing current-head review and verify only the durable
 issue and roadmap ownership plus the resulting remote PR metadata.
 
+When every route is settled and the final current-head review is clean, return
+to the main skill's **Deliver Learning Feedback** and **Verify Publication**
+steps before evaluating the merge gates. A learning-feedback comment or Slack
+message does not change the Git head. Missing or failed Slack delivery remains
+nonblocking under the main skill's rules.
+
 Do not merge from an earlier clean review, a mutation response, a stale CI run,
 or an Issue Completion Record whose reviewed change head does not contain the
 validated behavior. The record does not name its own containing commit. Permit
@@ -213,7 +219,7 @@ that commit-identity limitation instead of weakening the no-force rule.
 ## Closeout
 
 Report the merged pull request and exact head, validation and review evidence,
-finding dispositions, created or reused follow-up issues and roadmap entries,
-merge method and resulting commit, deleted branches and worktrees, and every
-retained cleanup target with its reason. Never collapse a failed merge or
-cleanup verification into success.
+finding dispositions, learning-comment link and Slack delivery status, created
+or reused follow-up issues and roadmap entries, merge method and resulting
+commit, deleted branches and worktrees, and every retained cleanup target with
+its reason. Never collapse a failed merge or cleanup verification into success.
