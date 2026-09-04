@@ -232,7 +232,7 @@ The issue's named GitHub implementer, falling back to the pull-request author wh
 _Avoid_: Last line author, inferred owner
 
 **Learning Feedback**:
-A short, simple-language, bullet-point coaching summary for the **Responsible Engineer** that records verified, reusable lessons within the engineer's control from a **Pull Request Review**.
+A focused, self-contained coaching note for the **Responsible Engineer**. It uses very simple language to explain what happened, why it matters, and what to do next without requiring the engineer to open the original review. It records only verified, reusable lessons within the engineer's control from a **Pull Request Review**.
 _Avoid_: Review finding, performance evaluation, blame report
 
 **Clean Review Context**:
@@ -411,6 +411,9 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - A **Pull Request Review** produces **Learning Feedback** for its **Responsible Engineer** regardless of who authored the pull request. When the requesting user authored it, the feedback remains in the pull-request conversation and review closeout, but the workflow does not send that user a redundant Slack message.
 - **Learning Feedback** includes a serious first-time mistake when its lesson is reusable, but excludes rejected or uncertain findings, requirement ambiguity, external tool or environment failures, and isolated mechanical mistakes that do not reveal a useful habit.
 - **Learning Feedback** leads with improvements and may name a specific good practice to repeat when review evidence supports it; it never requires balanced praise or invents a positive point.
+- **Learning Feedback** must pass an everyday-language test: an engineer who has not read the review can understand it on its own. It uses concrete actions, short sentences, and familiar words. When a technical term is necessary, the note explains it immediately.
+- Each **Learning Feedback** lesson starts with the action the engineer should take. It then states what happened in the reviewed pull request, why that specific event matters, and what the engineer should do next.
+- Simple **Learning Feedback** is not terse or shallow. Each lesson includes every step needed to connect the reviewed mistake to its consequence. It must not replace a missing causal step with a plausible-sounding claim; if the verified finding does not support a complete explanation, the lesson is not ready to publish.
 - **Learning Feedback** is published once per settled review against the latest reviewed pull-request head, after every finding has a disposition and every authorized correction has been re-reviewed; it does not wait for merge.
 - **Learning Feedback** is one top-level comment in the pull-request conversation, separate from inline finding threads; the workflow does not require or create a GitHub issue to hold it.
 - When the requesting user is not the **Responsible Engineer**, the workflow also sends **Learning Feedback** privately through Slack only after resolving the engineer's exact Slack identity. Missing Slack access or identity mapping skips that delivery with an explicit report; public Slack delivery requires a separate request.

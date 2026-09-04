@@ -189,17 +189,50 @@ do not reveal a useful habit. Lead with improvements. Add a `Keep doing` bullet
 only for a specific good practice supported by review evidence; never invent
 praise or require positive and negative balance.
 
-Use common words, short sentences, and one idea per bullet. Define an
-unavoidable unfamiliar term when first used. Link to an existing detailed
-finding thread when one exists instead of copying its full technical evidence.
+Write for an engineer who may not remember the review. Every lesson must make
+sense on its own. Start with the action the engineer should take, not an
+abstract lesson name. Then explain the concrete event in this pull request, the
+complete chain from that event to its consequence, and the future practice.
+
+Use very simple language: familiar words, short sentences, and one idea per
+sentence. Explain an unavoidable technical term immediately. Simple does not
+mean shallow. Use as much space as needed to make every cause-and-effect step
+clear. Do not compress the finding into reviewer shorthand such as `bind to a
+runtime epoch` or `make nonzero status authoritative`.
+
+Do not invent a missing link to make a lesson sound complete. For example, a
+container restart does not by itself prove that its code changed. State exactly
+what the verified finding proves changed or became stale. If the final finding
+does not support a complete explanation, do not publish that lesson yet. Link
+to an existing detailed finding thread for supporting evidence, not as a
+substitute for an understandable explanation.
+
+For example, `A migration could run against an unverified runtime` is too
+compressed. When the finding proves the full chain, explain it plainly:
+
+```markdown
+- **Check the running process again before a migration**
+  - **In this PR:** The workflow checked the deployment. Before the migration,
+    it checked only the container ID. A container can restart and keep the same
+    ID. The ID could therefore match even though the checked process had
+    stopped and a new process had started.
+  - **Why this matters:** The earlier checks applied to the old process. They
+    did not prove that the new process started correctly, was healthy, or still
+    matched the approved deployment. The migration could run while relying on
+    checks that were no longer current.
+  - **Next time:** Immediately before the migration, check the container ID,
+    restart count, start time, image, health, and deployment record. Stop if
+    any value differs from what was approved.
+```
+
 Use this shape:
 
 ```markdown
 @responsible-engineer **Learning feedback**
 
-- **Lesson: <short title>**
-  - **What happened:** <plain description of the mistake>
-  - **Why it matters:** <plain consequence>
+- **<direct action the engineer should take>**
+  - **In this PR:** <what happened, with enough context to understand it>
+  - **Why this matters:** <the complete, evidence-backed cause-and-effect chain>
   - **Next time:** <specific practice to apply in future work>
 
 - **Keep doing:** <specific evidence-backed practice, only when present>
@@ -209,12 +242,25 @@ Reviewed head: `<reviewed-head-sha>`
 <!-- pull-request-review:learning-feedback;head=<reviewed-head-sha> -->
 ```
 
+Before publishing, read each lesson as a cause-and-effect chain:
+
+1. What happened in this pull request?
+2. What changed or became unsafe because of it?
+3. How could that cause the stated harm?
+4. How does the next-time action prevent the same problem?
+
+If an engineer would need to guess any answer, add the missing explanation from
+the verified finding. If the finding does not contain that answer, omit the
+lesson until the evidence is complete.
+
 Repeat the nested improvement bullets for each distinct lesson. Keep the
-summary short and deduplicate lessons by root cause. When no lesson qualifies,
-publish nothing and report that outcome. Before posting, search the pull-request
-conversation for the stable marker and reviewed head. Do not duplicate an
-already published summary; if a later settled head changes the lessons, post
-one new summary for that head rather than editing history silently.
+summary focused rather than artificially brief: include the full explanation,
+remove repeated evidence, and deduplicate lessons by root cause. When no lesson
+qualifies, publish nothing and report that outcome. Before posting, search the
+pull-request conversation for the stable marker and reviewed head. Do not
+duplicate an already published summary; if a later settled head changes the
+lessons, post one new summary for that head rather than editing history
+silently.
 
 Post the summary once as a top-level pull-request comment, separate from inline
 finding threads. Do not require or create a GitHub issue for this feedback. The
@@ -245,9 +291,11 @@ Re-read the submitted review and threads. Verify:
 - qualifying learning feedback exists exactly once as a top-level comment for
   the latest settled reviewed head, or the no-qualifying-lesson outcome is
   explicit;
-- the learning comment uses simple improvement bullets, contains no uncertain
-  or out-of-control claim, and includes only evidence-backed `Keep doing`
-  guidance;
+- each learning lesson stands on its own, starts with a direct action, uses
+  very simple language, and explains the full cause-and-effect chain without
+  an uncertain, invented, or out-of-control claim;
+- every technical term is explained immediately, and `Keep doing` guidance is
+  included only when supported by review evidence;
 - eligible private Slack feedback was read back from the exact verified
   recipient with the pull-request link, or its skipped, failed, or unverified
   status and reason are explicit;
