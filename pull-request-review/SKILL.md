@@ -105,6 +105,12 @@ Receive the complete confirmed, deduplicated, ranked finding queue from `code-re
 
 Present one finding at a time. Include its stable ID, the full normal review evidence, a preview of the proposed GitHub comment, and `**Progress: Finding <position> of <total> - <remaining> remain after this**` on every response that presents or continues it. Calculate position and total using prior dispositions plus the active queue; do not show a remaining count alone. Ask the user to choose `comment`, `fix`, `reject`, `revise`, `defer`, `discuss`, or `request evidence` for the current finding. `comment` publishes the proposed review conversation; `fix` routes the finding through issue-owned delivery and does not also publish the comment. Do not present the next finding until the current one has an explicit disposition, then recompute the queue for dependencies or duplicates. If the total changes, state `**Queue revised: <old> -> <new>.** <reason>` before the next finding; never silently change the denominator or stable finding IDs.
 
+Apply `code-review`'s **Explain findings for the reader** standard to the review
+discussion and the proposed GitHub comment independently. Each must stand on its
+own; the comment cannot depend on explanations given only in this conversation.
+Apply the same standard to findings presented for a user decision in
+Review-to-Merge Mode.
+
 Use a batch of at most ten only when the user explicitly requests batch adjudication or a complete report. A generic request to review a pull request is not a request for batching. Treat `agree to all` as acceptance of the current explicit batch only.
 
 Do not publish unadjudicated findings. Preserve comment, fix, rejected, revised,
@@ -142,13 +148,13 @@ Use this comment structure:
 ```markdown
 @responsible-engineer **[Severity] Finding summary**
 
-**Problem:** <precise defect>
+**Problem:** <intended behaviour and what the code does instead, in simple language>
 
-**Failure scenario:** <input/state -> executed path -> material consequence>
+**Failure scenario:** <concrete trigger, the path the code takes and why, and the resulting consequence; explain every causal step>
 
-**Evidence and impact:** <repository or runtime evidence>
+**Evidence and impact:** <repository or runtime evidence supporting the explanation and its material impact>
 
-**Required fix:** <what must change and why>
+**Required fix:** <what must change and how it addresses this failure>
 
 **Proposed code:**
 <exact suggestion block or typed illustrative snippet>
@@ -283,6 +289,9 @@ Re-read the submitted review and threads. Verify:
 
 - every comment disposition was posted exactly once;
 - no rejected or unadjudicated finding was posted;
+- every published finding passes `code-review`'s **Explain findings for the
+  reader** check on its own, including immediate explanations of necessary
+  technical terms and a complete, evidence-supported cause-and-effect chain;
 - anchors, responsible-engineer tags, severity, evidence, fix guidance, code, and regression proof are present;
 - every correction request tells the Responsible Engineer to leave the thread open, apply `pending-review`, and notify the reviewer after pushing the correction and regression evidence;
 - the review event matches the accepted blocking status;

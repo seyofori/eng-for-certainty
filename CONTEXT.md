@@ -420,6 +420,14 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - Invoking **Pull Request Review** authorizes automatic pull-request and eligible private Slack delivery of qualifying **Learning Feedback** after the review settles. The workflow publishes no empty summary, verifies each attempted delivery, reports every skipped or failed destination, and never blocks review or merge solely because Slack delivery is unavailable.
 - A **Stacked Pull Request** depends on exactly one earlier base in an ordered stack; independent slices target the canonical base branch directly.
 - A **Code Review** produces one **Review Queue** after investigating, verifying, deduplicating, and ranking the complete finding landscape.
+- Every finding presented to a person by **Code Review**, **Pull Request Review**,
+  or a composing delivery workflow stands on its own for a reader who understands
+  software development but has not traced the affected code. It explains the
+  intended behaviour, trigger, actual behaviour and its cause, consequence, and
+  correction in familiar language, defines necessary technical terms immediately,
+  and preserves every evidence-supported causal step. This applies equally to
+  review discussions and proposed or published comments; internal agent records
+  may retain their structured technical format.
 - Every current item from a **Review Queue** or **Decision Queue** displays **Queue Progress** as `Finding 11 of 30 - 19 remain after this` or `Decision 11 of 30 - 19 remain after this`.
 - When recomputation changes the known total, **Queue Progress** states the previous total, new total, and reason before presenting the next item; stable item IDs do not change.
 - A **Pull Request Review** tags the **Responsible Engineer** only for a finding

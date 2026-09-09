@@ -437,6 +437,39 @@ Rank by severity and impact, then confidence, breadth, category, and urgency. Wh
 
 ## Output
 
+### Explain findings for the reader
+
+Apply this standard to every finding presented to a person: review discussions,
+complete reports, proposed and published GitHub comments, and findings escalated
+by composing delivery workflows. Internal agent return records may retain their
+structured technical format; a workflow presenting them to a person must apply
+this standard.
+
+Assume the reader understands software development but has not traced this code
+path. Make each finding understandable on its own, on the first read:
+
+- Explain what the affected code is supposed to do.
+- Describe the concrete input, state, or event that triggers the problem.
+- Explain what the code does instead and why it takes that path.
+- Connect that behaviour to the material consequence without skipping causal steps.
+- Explain what should change and how that correction addresses the problem.
+
+Use familiar words, concrete actions, and short sentences. Explain an unavoidable
+technical term immediately. Keep exact identifiers and file references as
+supporting evidence, rather than expecting them to explain the behaviour. The
+one-sentence defect statement is a summary, not a substitute for the explanation.
+Simple does not mean terse: preserve every step needed to evaluate the claim.
+Do not invent a causal link to complete the story; investigate missing evidence
+or narrow the claim and preserve its uncertainty before presenting it.
+
+Before presenting a finding, check that a reader can explain what should happen,
+what goes wrong and when, why the consequence follows, and how the proposed
+correction helps, without opening the referenced files or asking for a simpler
+explanation. Rewrite any finding that fails this check. Scale the explanation to
+the defect; do not repeat the same facts merely to fill separate headings.
+
+### Finding record and queue
+
 Put actionable findings first. For each finding include:
 
 - Severity and verifier verdict.
