@@ -115,8 +115,17 @@ than presenting uncertainty as a confirmed defect.
 
 Notify the verified `github-review-requested` Slack channel with the PR link,
 decision needed, recommendation, and direct link to the PR decision record.
-Multiple decisions may share one message if each record is linked. Verify the
-exact channel; never guess or substitute a destination. Read back both writes.
+Each Slack message must concern exactly one USER_DECISION or its associated
+finding. Never batch separate decisions or findings into one message, even when
+they concern the same PR. Include that item's stable finding ID, focused
+question, options, recommendation, and direct PR decision-record link so it can
+be understood and answered independently. Alternatives for that one decision
+may appear together; independently answerable questions require separate
+messages. Keep clarifications and responses in the corresponding Slack thread
+and track notification delivery and deduplication per decision. This formatting
+rule does not authorize Slack publication of ordinary non-decision findings.
+Verify the exact channel; never guess or substitute a destination. Read back
+both writes.
 If Slack is unavailable or delivery fails, preserve the PR record, report the
 failure, and continue independent work. If the PR record cannot be published,
 retain its exact content in the handoff and report the failed publication.
