@@ -1,6 +1,6 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `7a21d1a7ac17eccc6c13f39bf2129b258d3c695c`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `daf1bb9bd0c19649437a7d23c61ecdf911466787`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
@@ -21,6 +21,7 @@ replace stale local `deliver-issue` installations.
 - `engineering-frontend`
 - `code-review`
 - `pull-request-review`
+- `pr-review-and-fix`
 - `pull-request-creation`
 - `issue-delivery`
 - `issue-review`
@@ -131,6 +132,16 @@ Install pull request review with the complete review-to-merge doctrine:
 ```bash
 npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill grilling   --skill issue-review   --skill pull-request-creation   --skill issue-delivery   --skill pull-request-review
 ```
+
+Install autonomous PR review and correction with its complete doctrine:
+
+```bash
+npx skills add seyofori/eng-for-certainty   --skill engineering-for-certainty   --skill engineering-observability   --skill engineering-resilience   --skill engineering-auth-security   --skill engineering-frontend   --skill code-review   --skill pull-request-review   --skill pr-review-and-fix
+```
+
+This workflow follows repository AGENTS.md label rules, records human
+decisions in the PR, and routes decision requests to the verified
+github-review-requested Slack channel. It does not authorize merging.
 
 Install pull request creation:
 

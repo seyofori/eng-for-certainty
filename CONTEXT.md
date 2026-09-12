@@ -115,6 +115,17 @@ disposition for each confirmed finding, publishes only comment dispositions,
 and routes fix dispositions through issue-owned delivery.
 _Avoid_: Code review, reviewer implementation, comment-only adjudication
 
+**PR Review and Fix**:
+An explicitly authorized autonomous workflow that composes Code Review and
+Pull Request Review to correct an existing PR, independently re-review the
+resulting head, and request reviewer reassessment. It owns in-scope correction
+and publication instead of ordinary interactive adjudication. Material decisions
+are recorded in the PR and escalated to the verified `github-review-requested`
+Slack channel; authorized answers are recorded before dependent fixes begin.
+Applicable AGENTS.md rules own labels, including pending fixes after a decision.
+This workflow does not own merge, approval, or dismissal of existing reviews.
+_Avoid_: Ordinary read-only review, Review-to-Merge Mode, self-approved fixes
+
 **Review-to-Merge Mode**:
 An explicitly authorized **Pull Request Review** mode that coordinates
 current-head review, issue-owned corrections, deferred follow-up capture,
