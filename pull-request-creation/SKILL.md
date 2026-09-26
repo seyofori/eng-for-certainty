@@ -26,6 +26,9 @@ Resolve and read:
 - the traceability ledger, Runtime Acceptance Plan and current scenario evidence
   when observable runtime behaviour changed, and final independent review
   evidence.
+- for design-backed frontend work, the approved Design Reference Manifest,
+  resolvable Evidence Bundle, complete classified Design Audit Matrix,
+  source-drift result, and independent Design Audit evidence.
 
 If no canonical issue exists, ask for the issue identity before publishing. Distinguish the repository's local numbered issue from a GitHub issue number; never invent `Closes #N` from a local filename.
 
@@ -109,6 +112,12 @@ Confirm that:
   secret-free and complete. When the current head is later, verify that every
   intervening commit changes only canonical issue, roadmap, or completion-
   evidence surfaces and invalidates no recorded proof.
+- for design-backed frontend work, the authoritative source was rechecked
+  against the approved baseline; the frozen images and HTML/Tailwind reference
+  are resolvable and validated; every required matrix row has a current typed
+  outcome; no unresolved design drift, design conflict, export defect, or
+  evidence gap remains; and the required independent Design Audit belongs to
+  the exact candidate.
 
 If remote-only validation or a pull-request-created preview Runtime Acceptance
 Pass is the only remaining evidence, leave the issue `Needs Verification` and
@@ -156,7 +165,8 @@ Write a conditional PR body containing only applicable sections:
    tested revision and local, preview, or staging environment.
 7. Migration proof evidence.
 8. Security, privacy, resilience, and observability effects.
-9. UI screenshots and accessibility evidence.
+9. UI screenshots, the issue-owned Design Evidence Bundle and Design Audit
+   result when applicable, and accessibility evidence.
 10. Risks and rollback or recovery path.
 11. Stack position and dependencies.
 12. Deliberately deferred follow-up work.
@@ -171,7 +181,8 @@ Choose exactly one outcome from evidence:
 - **Draft:** the user explicitly requested WIP publication, or required evidence can only run after PR creation. Keep the issue `Needs Verification`.
 - **Ready for review:** the issue is verified complete, the traceability ledger,
   current Runtime Acceptance evidence, and final review are satisfied, accepted
-  findings are fixed, and no known blocker remains.
+  findings are fixed, every triggered Design Audit is current and complete, and
+  no known blocker remains.
 
 Pending GitHub CI alone does not make a completed PR a draft. When draft status exists only to obtain remote evidence, verify that evidence, complete the final audit, and mark the PR ready when every gate passes.
 

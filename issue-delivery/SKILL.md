@@ -41,6 +41,9 @@ Before changing code, verify that the canonical issue:
 - contains testable acceptance criteria and a complete traceability ledger;
 - contains a complete Runtime Acceptance Plan for observable runtime changes,
   or a justified `Not applicable` entry for non-runtime work;
+- for design-backed frontend work, contains the approved Design Reference
+  Manifest, resolvable Evidence Bundle, complete Design Audit Matrix, and
+  source-drift method required by `$engineering-frontend`;
 - states implementation change-control boundaries;
 - defines semantic review checkpoints when the slice is substantial, or
   explicitly states that the issue is small enough to use one delivery unit;
@@ -180,6 +183,24 @@ Use the triggered frontend, auth/security, and observability doctrine for design
 comparison, Test Identity Plans, disposable inboxes, Test Message Sinks, and
 secret-free evidence.
 
+For design-backed frontend work, read and follow `$engineering-frontend`'s
+[Design Conformance And
+Audit](../engineering-frontend/references/design-conformance.md). Before judging
+the implementation, re-fetch the authoritative source and compare its relevant
+version or node signature with the approved issue baseline. Do not overwrite the
+baseline merely because the source changed. Route relevant source changes as
+`DESIGN_DRIFT` and pause for the issue revision or user decision required by the
+contract.
+
+Exercise every applicable Design Audit Matrix row against the running exact
+candidate. Capture the implementation, perform the required side-by-side and
+overlay or image-diff comparisons, exercise designed interactions and
+accessibility, and record one typed outcome per row. Regenerate a defective
+image or HTML/Tailwind reference only when the approved design proves that the
+artifact is wrong; never change production code to match a defective export.
+Keep the issue `Needs Verification` while any required source check, artifact,
+row, or comparison is missing, failed, inaccessible, or stale.
+
 Run preview or staging scenarios when that environment safely exposes the exact
 candidate and deployment is already automated or separately authorized. This
 workflow does not authorize deployment by itself. If the environment appears
@@ -202,6 +223,11 @@ Review all changed surfaces and interactions across checkpoint boundaries,
 including shared contracts, configuration, deleted behavior, and integration
 seams. Checkpoint review evidence is an input, not a substitute for this final
 review.
+
+When the design-audit trigger applies, require `$code-review` to use its named
+design-audit specialist packet at no less than Medium effort. Shared design-
+system, global-token, or broad responsive-rule changes require High design-
+audit effort unless the issue evidence safely bounds their impact.
 
 Let the review finish discovery, verification, deduplication, and ranking
 before changing code. Do not create a noisy one-finding, one-fix cycle while
@@ -237,7 +263,8 @@ After a correction batch:
 1. Re-run the tests and proof invalidated by the corrections.
    This includes every Runtime Acceptance scenario the changed production,
    dependency, runtime-configuration, deployment, or test-data surface could
-   affect.
+   affect, plus every Design Audit Matrix row invalidated by a production,
+   asset, font, design-system, evidence-reference, or approved-design change.
 2. Run a clean `$code-review` pass against the new head.
 3. Re-verify prior findings and inspect the complete resulting diff for
    regressions or new issues.
@@ -258,10 +285,13 @@ Update the canonical issue's Issue Completion Record with the actual diff,
 traceability outcomes, validation, checkpoint IDs and accepted head SHAs,
 checkpoint and final-review results, finding dispositions, deviations, residual
 risks, Runtime Acceptance scenario ledger and environment/build identities,
-design comparison and proxy blind spots when applicable, branch, and commit
-references. Identify the last behavior-changing reviewed head rather than
-trying to name the commit that contains the record itself. Keep the record
-concise and keep the status truthful when remote evidence is still pending.
+proxy blind spots, branch, and commit references. For design-backed work, add
+the Design Reference Manifest and Evidence Bundle, source-drift result, complete
+classified Design Audit Matrix, comparison methods, approved deviations, and
+independent audit result. Identify the last behavior-changing reviewed head
+rather than trying to name the commit that contains the record itself. Keep the
+record concise and keep the status truthful when remote evidence is still
+pending.
 
 ### 8. Create Or Update The Pull Request
 
@@ -316,6 +346,9 @@ Declare delivery complete only when:
 - every required issue-owned Runtime Acceptance scenario passed against the
   exact current candidate, and every post-merge-only pass is linked as a
   downstream release gate with an owner and trigger;
+- every triggered design source check and Design Audit Matrix row has current
+  evidence, no unresolved design drift or conflict remains, and the required
+  independent Design Audit passed against the exact current candidate;
 - the current head has passed independent `$code-review`, and any commits after
   the recorded behavior-changing head are verified evidence-only descendants;
 - every confirmed finding has a recorded disposition and no unresolved blocker

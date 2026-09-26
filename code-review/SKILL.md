@@ -134,6 +134,18 @@ evidence unless a candidate requires it.
 
 Compare the diff with the stated intent. Treat an incomplete or contradictory change as a candidate even when the edited code is internally consistent.
 
+For every frontend change, inspect the issue, pull request, implementation
+handoff, and repository design documentation for an authoritative design
+artifact. When one applies to any changed surface, read
+[`$engineering-frontend`'s Design Conformance And
+Audit](../engineering-frontend/references/design-conformance.md), raise the
+review to at least Medium effort for that surface, and resolve the approved
+Design Reference Manifest, Evidence Bundle, Design Audit Matrix, and current
+source access before planning finders. Do not require the author to have used a
+special label when the authoritative design is otherwise discoverable. A casual
+inspiration image does not activate the audit unless the issue adopts it as the
+design authority.
+
 ### Read governing instructions
 
 Read every applicable `AGENTS.md`, `CLAUDE.md`, repository instruction, ancestor instruction, and relevant architecture or contribution document. For convention findings, cite the exact governing rule; do not report vibes-based style preferences.
@@ -241,6 +253,10 @@ Prefer these packet types:
 - **Coverage shards**: coherent changed modules, domains, or file groups. Every shard receives line-by-line correctness, removed-behavior, and testing-quality coverage.
 - **Contract tracing**: changed exports, endpoints, schemas, errors, database shapes, environment variables, consumers, tests, and deployment manifests.
 - **Triggered specialist passes**: security, data integrity, resilience, observability, frontend, or performance when the changed surface activates that doctrine.
+- **Design-audit specialist packet**: for design-backed frontend work, inspect
+  the authoritative source and approved baseline, detect relevant design drift,
+  run the complete issue-owned state-and-viewport matrix against the exact
+  running candidate, and classify every row before queue finalization.
 - **Style and clarity pass**: validation contracts, named and visible data flow, control flow, comments, and consistency within the changed concern.
 - **Global consistency pass**: reuse, simplification, sibling behavior, architectural ownership, and cross-shard invariants.
 
@@ -333,6 +349,31 @@ violation or a concrete clarity failure with a credible maintenance, misuse, or
 defect consequence. Verify every survivor through the normal candidate
 pipeline; broader advice is allowed only when the user explicitly asks for a
 style-focused review.
+
+### N. Design conformance and engineering integrity
+
+Run this angle whenever an authoritative design applies to a changed frontend
+surface. Follow [Design Conformance And
+Audit](../engineering-frontend/references/design-conformance.md) as the canonical
+procedure.
+
+- Independently re-fetch the exact design source and compare its relevant
+  version or node signature with the approved issue baseline before judging the
+  implementation.
+- Inspect the running exact candidate, not only screenshots, generated
+  HTML/Tailwind, component harnesses, or the implementer's summary.
+- Complete the entire Design Audit Matrix, including affected shared-component,
+  token, asset, responsive-rule, and integration-seam coverage.
+- Treat accessibility, required operational states, design-system contracts,
+  and platform conventions as engineering integrity, not subjective redesign.
+- Give each row one typed outcome. Only a verified, reachable, material
+  `IMPLEMENTATION_MISMATCH` enters the normal finding queue. Route design drift,
+  design conflict, missing evidence, and reference-export defects according to
+  the reference instead of misreporting them as code defects.
+- At High or Max effort, use an independent verifier to repeat the complete
+  matrix, including rows initially marked conformant. Broad design-system,
+  global-token, or responsive-rule changes default to High design-audit effort
+  unless repository evidence safely bounds their impact.
 
 ## Candidate Standard
 
@@ -517,9 +558,16 @@ When the review queue is empty, provide this closeout:
 3. Validation performed and results.
 4. Conditional residual risks, `NEEDS_CONTEXT` questions, and remaining coverage gaps.
 
+For a triggered Design Audit, also record the authoritative source and approved
+baseline, source-drift result, Evidence Bundle path, matrix coverage, comparison
+methods, independent verifier coverage, typed outcomes, approved deviations,
+and anything still unverified.
+
 Before presenting the first finding, confirm that:
 
 - every planned finder packet completed or has a recorded fallback;
+- every triggered Design Audit completed and classified its full matrix, or the
+  missing proof is recorded as an explicit verification gap;
 - every candidate has exactly one final verdict;
 - no verifier result refers to a superseded pre-deduplication claim;
 - any Workflow decline or execution limitation is recorded once without weakening the evidence standard;

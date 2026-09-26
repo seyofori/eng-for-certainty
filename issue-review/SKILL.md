@@ -16,7 +16,9 @@ Require companion engineering doctrine when the issue touches its area:
 - Observability: logging, metrics, tracing, audit records, correlation IDs, telemetry, redaction, or frontend log ingestion.
 - Resilience: external calls, retries, timeouts, idempotency, concurrency, queues, cron jobs, webhooks, background jobs, or async processing.
 - Auth/security: cookies, sessions, CSRF, token handling, actor context, protected routes, permission checks, policy registries, secrets, or authorization boundaries.
-- Frontend engineering: frontend architecture, routes or screens, API adapters, hooks, flows or views, forms, client state, accessibility, client telemetry boundaries, or web/mobile testing.
+- Frontend engineering: frontend architecture, routes or screens, API adapters,
+  hooks, flows or views, forms, client state, accessibility, design-backed UI,
+  client telemetry boundaries, or web/mobile testing.
 
 If the companion skill is available in the current agent environment, use it. Otherwise use
 the local repository's equivalent doctrine. If neither is available, name the
@@ -35,7 +37,7 @@ Ask for a target path only when those facts cannot be discovered safely.
 5. **Decompose and name the work**: prove the issue is one Smallest Coherent Slice or create an ordered child pack, then assign every slice its exact Branch Contract and PR base.
 6. **Resolve gaps with `$grilling`**: inspect discoverable facts, investigate empirical unknowns, map all user-owned decisions by dependency, and work through one material decision at a time using stable question IDs.
 7. **Accumulate answers**: maintain the decision map across items; do not edit the issue during the review.
-8. **Build traceability and execution**: map each acceptance criterion to its production owner and exact verification, define safe sequential or parallel implementation ownership, and set the Review Loop Contract for correction and escalation.
+8. **Build traceability and execution**: map each acceptance criterion to its production owner and exact verification, resolve the issue-ready design baseline when authoritative designs apply, define safe sequential or parallel implementation ownership, and set the Review Loop Contract for correction and escalation.
 9. **Control issue attention**: keep the implementation contract concise, separate reusable doctrine and raw evidence, and define semantic review checkpoints when the slice is substantial.
 10. **Cross-validate**: check the resolved issue, traceability ledger, checkpoint plan, execution plan, and conditional gates for contradictions and missing dependencies.
 11. **Establish immediate-delivery isolation**: after shared understanding is confirmed and every selected slice has its exact Branch Contract, create or verify each selected implementation branch and linked worktree before the final write.
@@ -436,10 +438,48 @@ The plan must:
   run again;
 - include a Test Identity Plan and Test Message Sink or inbox rules from
   `$engineering-auth-security` when authentication is exercised; and
-- include the exact authoritative design, version, states, platforms, viewports,
-  screenshots, and approved deviations required by `$engineering-frontend`'s
-  Design Conformance Pass when the frontend is based on a design; verify the
-  source and version are accessible before declaring the issue ready.
+- when the frontend is design-backed, read `$engineering-frontend`'s
+  [Design Conformance And
+  Audit](../engineering-frontend/references/design-conformance.md), create its
+  issue-ready Design Reference Manifest and Evidence Bundle, and include the
+  exact source, baseline, states, platforms, viewports, interactions, matrix,
+  source-drift method, and approved deviations in the plan.
+
+#### Design Reference Baseline
+
+For design-backed frontend work, create the approved baseline before declaring
+the issue implementation-ready. Do not leave baseline capture to the
+implementer or first code reviewer.
+
+During the interview, retrieve and inspect the source read-only and resolve the
+manifest, matrix, artifact set, and limitations without writing partial issue
+state. After shared understanding is confirmed, write the finalized baseline,
+Evidence Bundle, canonical issue, and required planning updates together as the
+one coherent final issue write.
+
+- Discover and preserve the repository's existing evidence convention. When
+  none exists, use `<canonical issue directory>/evidence/<canonical issue
+  stem>/design/`; the full issue stem excludes the `.md` extension.
+- Retrieve the exact authoritative source with the available design tooling and
+  record the file, page, frame, component, and node identities plus the version
+  or strongest approved snapshot and source-signature method.
+- Create frozen images for every issue-owned designed state and viewport.
+- Create and validate the self-contained HTML/Tailwind visual reference,
+  including for native targets, and add only the platform-specific supplements
+  needed for behaviour it cannot express faithfully.
+- Create the Design Audit Matrix covering every accepted state, platform,
+  viewport, variant, interaction, operational state, and affected shared-
+  design seam.
+- Record approved deviations and known source-signature or export limitations.
+- Keep the core issue concise: link the manifest and bundle instead of pasting
+  raw design data or generated markup into the issue.
+
+The finalized manifest and evidence references belong to the approved issue
+revision and its Approved Issue Commit. When repository policy stores large
+artifacts in Git LFS or an external artifact service, keep durable resolvable
+references under the issue evidence path. If the exact source, required nodes,
+stable baseline, frozen images, HTML/Tailwind rendition, or matrix cannot be
+obtained and validated, the issue is not implementation-ready.
 
 Do not treat an in-process handler call, component harness, mock adapter by
 itself, or implementer summary as runtime proof. A running mock-backed frontend
@@ -496,8 +536,10 @@ The record must contain:
 - the reconciled result of every traceability row, including exact validation
   commands and outcomes;
 - every Runtime Acceptance scenario result, exact revision and environment,
-  proxy blind spot, invalidated proof re-run, design comparison when applicable,
-  and linked downstream release gate;
+  proxy blind spot, invalidated proof re-run, and linked downstream release
+  gate; for design-backed work, include the baseline, source-drift result,
+  Design Audit Matrix outcomes, approved deviations, comparison methods, and
+  independent audit result;
 - the final `$code-review` outcome and the disposition of every confirmed
   finding;
 - when checkpoint reviews were used, the checkpoint ID, accepted head SHA,
@@ -602,7 +644,7 @@ Apply only when the issue scope triggers them. Use repo-specific docs and existi
 - **Outbound HTTP or third-party APIs**: require timeout, retry policy where appropriate, and named error mapping.
 - **Discriminated unions or enums**: name every exhaustive handling site that must change; for coded errors, apply the code-to-details matrix and envelope tests from gate 10.
 - **Result/error contracts**: follow the repo's expected-failure style and do not introduce throw-based expected failures or conflicting patterns silently.
-- **Frontend behavior**: include states, accessibility expectations, responsive behavior, and the user flow that proves the change. Name and verify the literal platform or library mechanism for imperative querying, navigation interception, subscriptions, focus restoration, or similar behavior. When operational logging is present, name where and when each event emits and prove it cannot fire per render, unbounded retry, or expected domain outcome.
+- **Frontend behavior**: include states, accessibility expectations, responsive behavior, and the user flow that proves the change. Name and verify the literal platform or library mechanism for imperative querying, navigation interception, subscriptions, focus restoration, or similar behavior. For design-backed work, require the issue-ready baseline, Evidence Bundle, Design Audit Matrix, drift check, comparison plan, and typed outcomes from `$engineering-frontend`. When operational logging is present, name where and when each event emits and prove it cannot fire per render, unbounded retry, or expected domain outcome.
 - **Async frontend mutations**: for every in-flight state, require a transition table with rows for each mutable control and for success, failure, retry, discard, and navigation. Each row must state whether the action is allowed, which snapshot owns the pending data, the next state, and the user-visible result. Cover edits made while a request is pending, stale or superseded responses, retry ownership, discard semantics, and navigation away/back. Every allowed transition and prohibited action must map to an exact test in the traceability ledger.
 - **Generated code or fixtures**: state regeneration commands and which generated files should or should not be edited by hand.
 - **Security or privacy**: state secret handling, PII exposure, data retention, and permission implications.
@@ -677,7 +719,10 @@ Before editing, verify:
 - **Runtime acceptance**: every observable runtime change has a complete local
   plan, applicable exact-candidate preview or staging plan, real-boundary
   scenarios, secret-free evidence contract, invalidation rules, and specialist
-  auth or design proof; non-runtime work has a justified `Not applicable` entry.
+  auth or design proof; design-backed frontend work already has its accessible
+  approved source, Design Reference Manifest, Evidence Bundle, complete Design
+  Audit Matrix, and drift-detection method; non-runtime work has a justified
+  `Not applicable` entry.
 - **Attention budget**: the core child issue keeps approved intent, acceptance,
   authority, pause conditions, and checkpoint routing prominent; reusable
   doctrine and raw evidence are not copied into it; length signals triggered
@@ -748,6 +793,8 @@ Parent: <parent issue, when this is a child slice>
 
 ## Runtime Acceptance Plan
 
+## Design Reference Baseline
+
 ## Review Loop Contract
 
 ## Completion Requirements
@@ -755,9 +802,10 @@ Parent: <parent issue, when this is a child slice>
 ## Notes
 ```
 
-Omit sections that genuinely do not apply, except keep `Runtime Acceptance Plan`
-with a justified `Not applicable` entry for non-runtime work. Do not add empty
-sections. Populate
+Omit sections that genuinely do not apply, including `Design Reference
+Baseline` when no authoritative design applies, except keep `Runtime Acceptance
+Plan` with a justified `Not applicable` entry for non-runtime work. Do not add
+empty sections. Populate
 `Completion Requirements` with the issue-specific write-back, evidence, status,
 and propagation rules during readiness review. Add the actual `Issue Completion
 Record` only after implementation evidence exists; never prefill it with

@@ -56,8 +56,11 @@ that must exercise the real mechanism when the blind spot is material.
 
 Apply `$engineering-auth-security` when authentication or disposable identities
 are involved. Apply `$engineering-frontend` for UI execution and design
-comparison. Apply `$engineering-observability` whenever a test message sink or
-telemetry boundary is involved.
+comparison. For design-backed frontend work, read its [Design Conformance And
+Audit](../../engineering-frontend/references/design-conformance.md) reference
+and require the approved baseline, Evidence Bundle, source-drift check, complete
+Design Audit Matrix, and independent audit. Apply `$engineering-observability`
+whenever a test message sink or telemetry boundary is involved.
 
 ## Evidence Ledger
 
@@ -73,7 +76,8 @@ Add only the applicable supporting facts:
 - exact API method, path, sanitized request, status, and material response fields;
 - UI viewport, platform, navigation steps, console and network result, and
   screenshots when visual proof matters;
-- Test Identity Plan, Design Conformance Pass, or proxy reference;
+- Test Identity Plan, Design Conformance Pass, Design Evidence Bundle and
+  classified matrix, or proxy reference;
 - cleanup performed; and
 - unexpected observations, including non-blocking observations.
 

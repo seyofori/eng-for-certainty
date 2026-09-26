@@ -385,28 +385,21 @@ For every frontend issue that changes observable runtime behaviour, follow
   records the missing backend integration proof. It does not make the feature
   end-to-end complete.
 
-When implementation is based on an authoritative design, require a Design
-Conformance Pass:
+When implementation is based on an authoritative design, read and follow
+[Design Conformance And Audit](references/design-conformance.md). Before the
+issue becomes implementation-ready, it requires an issue-owned Design Reference
+Manifest, stable source signature, frozen design images, validated HTML/Tailwind
+visual reference, platform-specific supplements when needed, and a complete
+state-and-viewport Design Audit Matrix. Delivery compares the running frontend
+against that baseline; independent code review re-fetches the source, detects
+design drift, and audits the complete matrix.
 
-- Record the exact design file or artifact, version or approved snapshot, frame
-  or node references, target platforms and viewports, designed states, and
-  approved deviations before implementation.
-- Open the exact design during verification. Do not compare from memory.
-- Put the running frontend into the equivalent state with equivalent content and
-  viewport dimensions, then compare side by side or with an overlay when
-  practical.
-- Check layout, spacing, typography, colour, assets, hierarchy, component states,
-  responsive behaviour, and designed interactions. Allow rendering differences
-  only when they do not materially change the accepted design.
-- Compare every state represented by the design. The issue still owns missing
-  loading, empty, error, permission, recovery, and accessibility states; design
-  silence does not remove them.
-- Treat a material mismatch as a failed pass. If the design conflicts with
-  accepted behaviour, the design system, accessibility, or platform conventions,
-  pause for a decision instead of choosing silently or reproducing an
-  accessibility defect.
-- Keep design conformance unverified when the authoritative source or version is
-  inaccessible. Re-run affected comparisons after a change invalidates them.
+Keep design conformance unverified when the authoritative source, approved
+version, evidence bundle, required runtime state, matrix row, or independent
+audit is missing, inaccessible, failed, or stale. A material implementation
+mismatch fails the pass. A conflict with accepted behaviour, accessibility, the
+design system, or platform conventions requires a decision instead of a silent
+deviation.
 
 ## Client Observability
 
@@ -503,6 +496,8 @@ remain afterward for development and testing.
 - If a platform or E2E tool is unsupported in the repo, document the limitation and prioritize accessibility plus unit/component and flow coverage on supported platforms.
 - A mock-backed frontend slice is not reported as an end-to-end complete feature; production adapter integration and live contract/integration evidence remain explicit until verified.
 - Observable frontend changes have current browser, computer, emulator, or
-  device Runtime Acceptance evidence, including Design Conformance evidence when
-  an authoritative design exists.
+  device Runtime Acceptance evidence. When an authoritative design exists, the
+  issue also has a current Design Reference Manifest and Evidence Bundle, a
+  source-drift result, a complete classified Design Audit Matrix, and the
+  required independent Design Audit.
 - Before completion, verify every triggered check or record its omission and alternative assurance in the `$engineering-for-certainty` handoff.

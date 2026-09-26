@@ -64,6 +64,41 @@ An issue-owned comparison of a running frontend against the exact authoritative
 design states, versions, platforms, and viewports named by its design contract.
 _Avoid_: Memory-based comparison, subjective looks-close check, universal pixel equality
 
+**Design Reference Manifest**:
+The issue-ready record that pins the authoritative design source, relevant
+version and node identities, source signature, states, variants, interactions,
+platforms, viewports, design-system dependencies, approved deviations, and
+evidence location before implementation begins.
+_Avoid_: Figma link alone, reviewer-created baseline, latest design by default
+
+**Design Evidence Bundle**:
+The issue-owned human review surface containing frozen design images, the
+source-signature record, a validated self-contained HTML/Tailwind visual
+reference, and the smallest platform-specific supplements needed to explain
+behaviour the web rendition cannot express faithfully.
+_Avoid_: Production starter code, unversioned screenshot, raw Figma dump
+
+**Design Audit Matrix**:
+The complete mapping from every issue-owned design state, platform, viewport,
+variant, interaction, operational state, and affected shared-design seam to its
+reference artifacts, runtime evidence, comparison method, and typed result.
+_Avoid_: One representative screenshot, whole-application visual sweep
+
+**Design Drift**:
+A relevant change in the authoritative design source after the issue's approved
+baseline was captured. It requires the workflow to resolve whether the issue
+keeps its baseline or adopts the changed design before judging implementation
+fidelity.
+_Avoid_: Automatic code defect, automatic baseline overwrite, file-wide timestamp alone
+
+**Design Audit**:
+The independent **Code Review** specialist pass that rechecks the authoritative
+source for **Design Drift**, compares the running exact candidate through every
+applicable **Design Audit Matrix** row, verifies accessibility and engineering
+integrity, and classifies discrepancies before any implementation mismatch
+enters the normal finding queue.
+_Avoid_: Implementer screenshot summary, subjective redesign, snapshot-test-only review
+
 **Delivery Operator**:
 The composing workflow implemented by `$issue-delivery` that carries one
 approved issue through implementation, issue-owned validation, independent code
@@ -377,10 +412,31 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
   short-lived. Runtime evidence records successful retrieval without recording
   the OTP, magic link, session, or other authentication secret.
 - A frontend **Runtime Acceptance Pass** includes a **Design Conformance Pass**
-  whenever its issue names an authoritative design. Material mismatches fail the
+  whenever its issue names an authoritative design. Before implementation-ready
+  status, `$issue-review` creates the **Design Reference Manifest**, **Design
+  Evidence Bundle**, and **Design Audit Matrix**. Material mismatches fail the
   pass; conflicts between the design, accepted behaviour, design system,
   accessibility, or platform conventions require an explicit decision instead
   of a silent deviation.
+- The **Design Evidence Bundle** uses the repository's evidence convention, or
+  falls back to `<canonical issue directory>/evidence/<canonical issue
+  stem>/design/`. Frozen images and the HTML/Tailwind rendition make the target
+  understandable to humans; the authoritative source and **Design Reference
+  Manifest** remain the contract.
+- The **Delivery Operator** re-fetches the source before comparison, records
+  **Design Drift** without overwriting the baseline, executes every applicable
+  **Design Audit Matrix** row, and leaves missing or stale design proof
+  unverified.
+- A triggered **Design Audit** is an explicit **Code Review** specialist packet
+  at no less than Medium effort. High or Max review independently repeats the
+  complete matrix, including rows initially marked conformant; broad shared-
+  component, design-system, global-token, or responsive-rule changes default to
+  High design-audit effort unless evidence safely bounds their impact.
+- A **Design Audit** classifies each row as `CONFORMANT`,
+  `APPROVED_DEVIATION`, `IMPLEMENTATION_MISMATCH`, `DESIGN_DRIFT`,
+  `DESIGN_CONFLICT`, `EVIDENCE_GAP`, `REFERENCE_EXPORT_DEFECT`, or justified
+  `NOT_APPLICABLE`. Only a verified, reachable, material implementation
+  mismatch becomes a normal review finding.
 - `$engineering-for-certainty` owns the universal **Runtime Acceptance Pass**
   rule; `$issue-review` authors its issue-specific plan; the **Delivery Operator**
   executes it; **Code Review** audits its coverage and evidence; **Pull Request
