@@ -17,33 +17,48 @@ Load only the checkpoint's required operating set:
 
 Do not treat earlier implementation summaries as substitutes for these sources.
 
+Before implementation, the **Delivery Operator** either selects a suitable
+**Implementation Worker** or declares that it will perform the worker role in
+the primary context. Every delegated assignment must include the approved
+behaviour, exact files or symbols, owned acceptance and traceability rows,
+required validation and specialist proof, allowed mechanical judgment,
+escalation conditions, and required return evidence. One shared implementation
+worktree has at most one active writer.
+
 ## Checkpoint Loop
 
 For each checkpoint:
 
-1. Implement only the current checkpoint's approved behavior and surfaces.
-2. Run its exact validation, delivery-owned specialist passes and proof, and the
+1. The Implementation Worker implements only the current checkpoint's approved
+   behavior and surfaces, then returns changed files, validation evidence,
+   failures, deviations, and residual risk to the Delivery Operator.
+2. The Delivery Operator inspects the returned diff and evidence against the
+   assignment before accepting it.
+3. Run its exact validation, delivery-owned specialist passes and proof, and the
    repository gates needed to leave the branch green. For design-backed work,
    run the checkpoint scope defined by
    [`$engineering-frontend`'s Design Conformance And
    Audit](../../engineering-frontend/references/design-conformance.md).
-3. Create a coherent local checkpoint commit under the repository's history
+4. Create a coherent local checkpoint commit under the repository's history
    conventions and freeze its candidate head SHA.
-4. Invoke `$code-review` in Checkpoint Review Mode.
-5. Use the issue base as the first checkpoint base. For later checkpoints, use
+5. Invoke `$code-review` in Checkpoint Review Mode using an Independent Reviewer
+   context that did not implement the checkpoint.
+6. Use the issue base as the first checkpoint base. For later checkpoints, use
    the previous accepted checkpoint SHA as the primary review base.
-6. Require the reviewer to inspect the new range plus its integration seams
-   with earlier accepted checkpoints and any shared contract it changes.
-7. Wait for complete checkpoint discovery, verification, deduplication, and
-   routing before editing.
-8. Route every result through the Review Loop Contract.
-9. Apply one coherent batch of independent `AUTO_CORRECT` findings where
+7. Require the Independent Reviewer to inspect the new range plus its
+   integration seams with earlier accepted checkpoints and any shared contract
+   it changes.
+8. Wait for complete checkpoint discovery, verification, deduplication, and
+   verdicts before editing.
+9. The Delivery Operator inspects every reviewer verdict and routes each result
+   through the Review Loop Contract.
+10. Apply one coherent batch of independent `AUTO_CORRECT` findings where
    practical.
-10. Re-run invalidated validation and specialist proof, freeze the corrected
+11. Re-run invalidated validation and specialist proof, freeze the corrected
     head, and re-review the same checkpoint.
-11. Record the accepted head SHA only when the checkpoint passes its advance
+12. Record the accepted head SHA only when the checkpoint passes its advance
     rule.
-12. Begin the next checkpoint from that accepted head.
+13. Begin the next checkpoint from that accepted head.
 
 ## Advance Rule
 

@@ -7,6 +7,11 @@ description: Verify completed issue work, enforce its branch and evidence contra
 
 Load and follow `$engineering-for-certainty`. Convert completed, verified local work into a truthful GitHub handoff. Own branch verification, intentional publication, PR creation or update, readiness state, and remote verification.
 
+Accept a publication handoff only from the Delivery Operator named by the
+governing workflow. An Implementation Worker or Independent Reviewer cannot
+bypass that operator or turn its narrower assignment into publication
+authority.
+
 Do not implement missing work, perform code review, repair CI, invent evidence, or broaden the issue. Stop when the work is not ready unless the user explicitly authorizes a work-in-progress PR.
 
 ## Preconditions
@@ -47,11 +52,8 @@ Require the issue's exact conventional branch name:
 <type>/<NN>-<short-kebab-description>
 ```
 
-Preserve a platform-required prefix, for example:
-
-```text
-codex/<type>/<NN>-<short-kebab-description>
-```
+Prepend the exact platform-required prefix when the active harness defines one;
+shared skill text does not choose that prefix.
 
 If issue-driven completed changes are still on the default branch or any branch
 that conflicts with the Branch Contract, stop rather than creating the recorded
@@ -100,8 +102,11 @@ Inspect every changed and untracked file. Reject unrelated work, unexplained gen
 Confirm that:
 
 - every acceptance criterion maps to production code and exact evidence;
+- every Implementation Worker result was returned to and inspected by the
+  Delivery Operator;
 - the combined canonical branch, not only helper branches, passed required validation;
-- final independent code review completed and accepted findings were fixed;
+- the Independent Reviewer completed the final review and accepted findings
+  were fixed and re-reviewed;
 - triggered doctrine for migrations, auth/security, resilience, observability, and frontend work is satisfied;
 - the Migration Proof Harness evidence exists when a database migration is present;
 - material deviations are reflected in the canonical issue;

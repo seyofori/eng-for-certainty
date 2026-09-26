@@ -5,9 +5,16 @@ description: Review a GitHub pull request through the evidence-verified code-rev
 
 # Pull Request Review
 
-Use `$code-review` as the sole analysis engine. On the Dexwin engineering server, use `code-review-dexwin`, its execution alias, as the same canonical analysis engine. Own the GitHub-specific workflow: resolve the pull request, reconcile existing threads, adjudicate new verified findings, coordinate issue-owned correction when authorized, publish selected comments, deliver qualifying learning feedback, and verify the resulting review state.
+Use `$code-review` as the sole analysis engine by invoking a distinct read-only
+Independent Reviewer context. This skill is a composing workflow, not the
+Independent Reviewer. Own the GitHub-specific workflow: resolve the pull
+request, reconcile existing threads, adjudicate new verified findings,
+coordinate issue-owned correction when authorized, publish selected comments,
+deliver qualifying learning feedback, and verify the resulting review state.
 
-Do not duplicate or weaken `code-review` doctrine. If neither the canonical skill nor its platform alias is available, or one of its triggered engineering dependencies is unavailable, stop and name every missing skill.
+Do not duplicate or weaken `code-review` doctrine. If the canonical skill or
+one of its triggered engineering dependencies is unavailable, stop and name
+every missing skill.
 
 **Review-to-Merge Mode** additionally requires `$issue-review`,
 `$issue-delivery`, and `$grilling`, together with the dependencies those skills
@@ -89,9 +96,14 @@ Leave every other workflow-owned thread open and report what remains. For human-
 
 ### 3. Run Code Review
 
-Load and follow `$code-review`, or `code-review-dexwin` on the Dexwin engineering server, against the current PR head. Provide it the PR description, governing issue, complete diff, relevant repository contracts, validation evidence, and current unresolved-thread claims so it can avoid duplicates.
+Load and follow `$code-review` against the current PR head. Provide it the PR
+description, governing issue, complete diff, relevant repository contracts,
+validation evidence, and current unresolved-thread claims so it can avoid
+duplicates.
 
-Keep finder and verifier contexts logically independent. Never convert an existing comment, reviewer opinion, or subagent claim directly into a finding without verification.
+Keep finder and verifier contexts logically independent. Never convert an
+existing comment, reviewer opinion, or delegated review-context claim directly
+into a finding without verification.
 
 When **Review-to-Merge Mode** is active, read and follow
 [Review to Merge](references/review-to-merge.md) after the complete verified

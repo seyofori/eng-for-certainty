@@ -5,7 +5,18 @@ description: Create or review an issue, ticket, feature file, bug report, roadma
 
 # Issue Creation And Review
 
-Create or review the issue against the bar: a competent implementation agent should be able to complete it with zero clarifying questions and produce a robust, validated change. If ambiguity remains, the issue is not ready.
+Act as the **Planning Agent**. Create or review the issue against the bar: a
+competent **Implementation Worker** should be able to complete its bounded
+assignment with zero clarifying questions and produce a robust, validated
+change. If ambiguity remains, the issue is not ready.
+
+The user-facing agent retains interactive planning. Delegate only bounded,
+non-interactive investigation to a Planning Agent that has the required context
+and permissions. If delegated work discovers a user-owned decision, it returns
+the decision and evidence to the user-facing agent instead of guessing or
+attempting indirect user interaction. When delegation is unavailable, continue
+in the primary agent without weakening this skill's discovery, decision, or
+readiness gates.
 
 Use plain language at a Grade 10 reading level in the rewritten issue, review findings, decision summaries, and clarification questions so they are quick and easy to understand. Prefer short sentences and familiar words. Preserve exact domain terms, code identifiers, and contract language, and explain necessary jargon when it first appears. Never simplify away technical precision.
 
@@ -216,7 +227,9 @@ Require each slice to record its exact conventional Branch Contract before imple
 <type>/<NN>-<short-kebab-description>
 ```
 
-Preserve a platform-required prefix such as `codex/`. The type and stable issue number must agree with the issue filename. A branch suggestion or pattern without the resolved name does not pass.
+Preserve any platform-required prefix. The type and stable issue number must
+agree with the issue filename. A branch suggestion or pattern without the
+resolved name does not pass.
 
 For correction of an existing pull request under an explicit review-to-merge
 workflow, do not rename or replace its published head branch merely to satisfy
@@ -244,7 +257,7 @@ Use Stacked Pull Requests only for real dependencies. Record each PR's head, bas
 
 An issue must be complete without becoming a transcript, raw evidence store, or
 copy of reusable engineering doctrine. Optimize for instruction salience: the
-implementation agent must be able to distinguish approved intent, acceptance
+Implementation Worker must be able to distinguish approved intent, acceptance
 criteria, change authority, and stop conditions from supporting detail.
 
 For every non-trivial child issue, add a concise `Agent Start Here` section near
@@ -351,7 +364,7 @@ State what is explicitly not changing. This prevents adjacent refactors, UX expa
 
 ### 6. Implementation Change Control
 
-The issue must state what judgment the implementation agent may exercise without
+The issue must state what judgment the Implementation Worker may exercise without
 asking, and what discoveries require pausing.
 
 Include:
@@ -387,7 +400,14 @@ Before implementation, include a traceability ledger with one row per acceptance
 
 Split criteria that have multiple independently observable outcomes. Every row must name the code that owns the behavior and the exact evidence that will prove it; broad entries such as "frontend," "service layer," or "covered by tests" do not pass. Manual verification may substitute for automated criterion proof only when automation is impractical and the issue explains why. A Runtime Acceptance Pass is complementary proof and remains independently required for observable runtime changes even when automated tests cover the same criteria.
 
-Require a post-implementation issue-against-diff audit by an independent reviewer or a separate skeptical pass that did not rely on the implementer's completion summary. Reconcile every ledger row against the actual production diff and test evidence, identify unplanned changes, and leave the issue unverified while any row lacks evidence.
+Require a post-implementation issue-against-diff audit by an **Independent
+Reviewer** that did not implement the candidate and does not rely on the
+Implementation Worker's completion summary. Reconcile every ledger row against
+the actual production diff and test evidence, identify unplanned changes, and
+leave the issue unverified while any row lacks evidence. A deliberately
+separated pass in the same implementation context is supplemental evidence, not
+independent review; record the limitation and keep the independent-review gate
+unsatisfied.
 
 When an acceptance criterion names a specific runtime mechanism (a "scheduled" job, a "background" retry, an "on reconnect" handler), the Test Approach must state whether verification exercises that literal mechanism or a named, justified proxy (e.g. a manual one-shot invocation of the same script the scheduler calls). An unstated substitution leaves a criterion looking tested when only an adjacent code path was actually exercised.
 
@@ -449,7 +469,7 @@ The plan must:
 
 For design-backed frontend work, create the approved baseline before declaring
 the issue implementation-ready. Do not leave baseline capture to the
-implementer or first code reviewer.
+Implementation Worker or first code reviewer.
 
 During the interview, retrieve and inspect the source read-only and resolve the
 manifest, matrix, artifact set, and limitations without writing partial issue
@@ -482,7 +502,7 @@ stable baseline, frozen images, HTML/Tailwind rendition, or matrix cannot be
 obtained and validated, the issue is not implementation-ready.
 
 Do not treat an in-process handler call, component harness, mock adapter by
-itself, or implementer summary as runtime proof. A running mock-backed frontend
+itself, or Implementation Worker summary as runtime proof. A running mock-backed frontend
 may prove only an explicitly frontend-only slice when the plan names the adapter
 as a proxy and defers live backend integration proof. Keep the issue
 `Needs Verification` while required issue-owned runtime evidence is missing,
@@ -559,9 +579,9 @@ issue files, or completion evidence, record the last behavior-changing reviewed
 head and require an independent current-head review to verify that every later
 commit is evidence-only and invalidates no recorded proof.
 
-The implementation or integration agent owns the write-back. The final reviewer
-must verify the completed record against the raw diff, test output, and review
-evidence; the reviewer does not become the canonical issue writer. Update any
+The **Delivery Operator** owns the write-back. The final **Independent
+Reviewer** must verify the completed record against the raw diff, test output,
+and review evidence; the reviewer does not become the canonical issue writer. Update any
 roadmap, index, or completed-work archive that tracks the issue's status in the
 same write pass so those surfaces cannot contradict the issue.
 
@@ -626,8 +646,9 @@ For an issue intended for `$issue-delivery`, include:
 
 Tighten the default contract for the issue's risk, but never broaden automatic
 authority. A durable goal supplies persistence, not permission to resolve a
-material ambiguity. Reviewer contexts remain read-only; the delivery operator
-owns authorized edits, validation, publication, and CI follow-through.
+material ambiguity. Independent Reviewer contexts remain read-only; the
+Delivery Operator owns authorized edits, validation, publication, and CI
+follow-through.
 
 ## Conditional Gates
 
@@ -652,7 +673,13 @@ Apply only when the issue scope triggers them. Use repo-specific docs and existi
 
 ### Execution, Checkpoint Reviews, And Final Review
 
-For non-trivial issues, include an Execution Plan that identifies which workstreams are independent and which are ordered. Use subagents in parallel only when their production ownership and traceability rows do not overlap materially.
+For non-trivial issues, include an Execution Plan that identifies which
+workstreams are independent and which are ordered. Use parallel Implementation
+Workers only when their production ownership and traceability rows do not
+overlap materially and each writer has filesystem isolation plus a named
+integration path. A shared implementation worktree has at most one active
+writer. Independent read-only investigation and review may run in parallel when
+their workstreams are genuinely separate.
 
 When the issue defines review checkpoints, every checkpoint must be a coherent,
 green, behavior-complete state with owned acceptance criteria, exact validation,
@@ -660,7 +687,10 @@ a frozen review head, and an explicit advance condition. Checkpoint reviews
 reduce the amount of new code assessed at once; they do not create separate
 issues, branches, or pull requests.
 
-- Give each implementation subagent bounded files or symbols, acceptance criteria, and validation responsibility.
+- Give each Implementation Worker its approved behaviour, bounded files or
+  symbols, acceptance criteria, required validation, allowed-change boundary,
+  escalation conditions, and required return evidence: changed files,
+  validation outcomes, failures, deviations, and residual risk.
 - Give every Branch Contract its own dedicated linked worktree by default,
   including the Canonical Integration Branch and each Helper Branch. Concurrent
   writes require that filesystem isolation. Record the repository convention or
@@ -676,7 +706,15 @@ issue-base-to-current-head diff. Revisit interactions across checkpoints,
 shared contracts, configuration, deleted behavior, and integration seams.
 Checkpoint evidence supports this review but cannot replace it.
 
-Make final code review the last implementation gate. For multi-slice, medium-risk, or high-risk changes, require multiple fresh review subagents when available: independent finder passes using `$code-review` and a separate skeptical verifier that receives raw evidence without the finder's expected verdict. On the Dexwin engineering server, `code-review-dexwin` is the execution alias for the same canonical skill, not separate doctrine. For tiny low-risk changes, allow one clean reviewer plus a separate skeptical pass. If subagents are unavailable, require equivalent logically independent passes and record the limitation.
+Make final code review the last implementation gate. For multi-slice,
+medium-risk, or high-risk changes, require multiple fresh Independent Reviewer
+contexts when available: independent finder passes using `$code-review` and a
+separate skeptical verifier that receives raw evidence without the finder's
+expected verdict. For tiny low-risk changes, allow one Independent Reviewer
+with a separate skeptical pass inside that fresh review context. If no fresh
+review context is available, use deliberately separated self-review only as
+supplemental evidence, record the limitation, and keep the independent-review
+gate unsatisfied.
 
 Reconcile and deduplicate every confirmed finding, obtain user adjudication when the workflow requires it, fix accepted blockers, and re-run affected proof. Then complete the Issue Completion Record gate, including reviewer verification of the written record, before declaring the issue complete.
 

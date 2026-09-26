@@ -1,191 +1,100 @@
 # Review Loop Contract
 
-Use this contract only when `$code-review` is the read-only analysis engine
-inside a composing delivery workflow such as `$issue-delivery`. Direct code
-review keeps the ordinary interactive Review Queue behavior from `SKILL.md`.
-
-## Contents
-
-- Required Issue Contract
-- Review Ownership
-- Finding Routes
-- Checkpoint Advancement
-- Delivery Return Record
-- Re-Review
+Use this contract only when `$code-review` is the read-only Independent
+Reviewer inside a composing workflow such as `$issue-delivery`. Direct review
+keeps the interactive Review Queue behavior from `SKILL.md`.
 
 ## Required Issue Contract
 
-The governing issue must state:
-
-- whether implementation may transition automatically into code review, pull
-  request creation, and CI follow-through;
-- which confirmed findings may be corrected without user adjudication;
-- which changes remain user-owned decisions;
-- the revalidation and re-review required after correction;
-- the repeated-churn threshold that forces escalation; and
-- the ready-to-merge completion condition.
-
-An outer review-to-merge workflow must separately and explicitly state whether
-it owns `DEFER_FOLLOW_UP` issue, roadmap, pull-request, and revalidation writes.
-Do not infer that authority from the governing issue, a generic review request,
-or a durable goal.
-
-If the issue has no Review Loop Contract, return that gap to the composing
-workflow. Do not infer correction authority from the existence of a goal or
-from a general request to finish the work.
+The governing issue must state authorized transitions, the automatic-correction
+boundary, user-owned decisions, required revalidation and re-review, the churn
+threshold, and the completion condition. An outer review-to-merge workflow must
+separately authorize durable follow-up and publication writes. Never infer
+authority from a goal or a general request to finish.
 
 ## Review Ownership
 
-Keep finders and verifiers read-only. They may inspect and run safe read-only or
-non-mutating validation, but they must not edit the implementation, commit,
-push, post comments, or resolve threads.
+The Independent Reviewer owns candidate discovery, normalization,
+deduplication, skeptical verification, and final evidence verdicts. Every
+review context stays read-only: it may inspect and run safe non-mutating proof,
+but it must not edit, commit, push, publish comments, or resolve threads.
 
-The composing delivery workflow owns corrections, publication, CI follow-up,
-and user escalation. This preserves independence between the implementation
-and the evidence used to judge it.
+The Delivery Operator owns routes, corrections, publication, CI follow-up, and
+user escalation. This separates whether a claim is true from what the delivery
+workflow does next.
 
 ## Finding Routes
 
-After normal verification, attach exactly one route to every non-refuted
-candidate:
+After receiving the complete verified queue, the Delivery Operator attaches
+exactly one route to every non-refuted candidate: `AUTO_CORRECT`,
+`DEFER_FOLLOW_UP`, `USER_DECISION`, `BLOCKED`, or `RESIDUAL_RISK`.
 
-- `AUTO_CORRECT`
-- `DEFER_FOLLOW_UP`
-- `USER_DECISION`
-- `BLOCKED`
-- `RESIDUAL_RISK`
+Use `AUTO_CORRECT` only when the finding is `CONFIRMED`; the failure and
+correction are fully inside the approved issue; the correction has one clear
+interpretation; it preserves approved architecture and public contracts; it
+adds no dependency, migration, schema, permission, security-policy, or test-
+strategy choice; it requires no choice between plausible product meanings; it
+does not hide, weaken, or replace required proof; and verifier evidence has no
+material disagreement. It authorizes the Delivery Operator—not the Independent
+Reviewer—to apply the smallest correction and focused proof.
 
-### AUTO_CORRECT
+Use `DEFER_FOLLOW_UP` only in an explicitly authorized review-to-merge workflow
+when the confirmed finding violates no current acceptance criterion or promised
+behavior; weakens no security, permission, data-integrity, migration-safety,
+operational-reliability, or required-validation obligation; conceals no known
+regression; leaves the pull request independently releasable; and can become a
+bounded coherent implementation, discovery, or decision issue. Severity is
+supporting evidence, not the deferral rule. The reviewer returns root-cause
+evidence, why the current change remains safe, the minimum affected surface,
+and a follow-up seed. The Delivery Operator owns issue creation, prioritization,
+publication, and current-head revalidation. This route is unavailable during
+checkpoint review or standalone `$issue-delivery`.
 
-Use only when all of these are true:
-
-- the finding is `CONFIRMED`;
-- the failure and correction are fully inside the approved issue surface;
-- the correction has one clear interpretation under the acceptance criteria;
-- it preserves the approved architecture and public contracts;
-- it adds no dependency, migration, schema, permission, or security-policy
-  choice;
-- it does not require choosing between plausible product meanings;
-- it does not hide, weaken, or replace required proof; and
-- verifier evidence does not contain a material disagreement.
-
-An `AUTO_CORRECT` route authorizes the delivery operator, not the reviewer, to
-apply the smallest correction and focused regression proof.
-
-### DEFER_FOLLOW_UP
-
-Use only for a `CONFIRMED` finding in an explicitly authorized
-review-to-merge workflow, and only when every condition below holds:
-
-- it does not violate the governing issue's acceptance criteria or promised
-  behaviour;
-- it does not weaken security, permissions, data integrity, migration safety,
-  operational reliability, or required validation;
-- it does not conceal a known regression;
-- the pull request remains independently releasable without the correction;
-- the finding can become a bounded coherent implementation, discovery, or
-  decision issue; and
-- severity is supporting evidence rather than the deferral rule.
-
-Return the root-cause evidence, why the current pull request remains safe, and
-the minimum affected surface and proof needed by the follow-up issue. The
-reviewer does not create or prioritize the issue. The composing workflow owns
-issue review, roadmap integration, pull-request publication, and current-head
-revalidation.
-
-Do not use `DEFER_FOLLOW_UP` during checkpoint review or standalone
-`$issue-delivery`. Without an outer workflow that owns the durable planning
-write and the resulting pull-request update, use `USER_DECISION` instead.
-
-### USER_DECISION
-
-Use when correction could change product intent, acceptance criteria, scope,
-architecture, public behavior or contract, schema or migration behavior,
-permissions, security posture, dependency choice, or test strategy. Also use
-it for `NEEDS_CONTEXT`, product-sensitive `CONDITIONAL` results, material
-verifier disagreement, oscillating fixes, or the same root cause surviving the
-issue's correction threshold.
-
-Return the exact decision, evidence, impact, options, and recommendation. Do
-not present an uncertain material claim as an automatic fix.
-
-### BLOCKED
-
-Use when safe progress requires missing authority, credentials, access,
-external state, an unavailable required skill, or an out-of-scope prerequisite.
-Name the owner or trigger that can clear the block.
-
-### RESIDUAL_RISK
-
-Use for a normal `CONDITIONAL` result whose assumption remains genuinely
-unresolved but does not justify changing the implementation. Preserve the
-assumption and the evidence that would promote, refute, or close it.
+Use `USER_DECISION` for material intent, scope, architecture, public contract,
+schema, migration, permission, security, dependency, or test-strategy choices;
+`NEEDS_CONTEXT`; product-sensitive `CONDITIONAL` results; evidence disagreement;
+oscillating fixes; or the same root cause surviving the issue's correction
+threshold. Use `BLOCKED` for
+missing authority, access, external state, skills, or prerequisites. Use
+`RESIDUAL_RISK` for a `CONDITIONAL` result whose explicit assumption does not
+justify changing implementation.
 
 ## Checkpoint Advancement
 
-When the review targets a delivery checkpoint:
-
-- `CLEAN` permits the operator to record the accepted head and begin the next
-  checkpoint.
-- `AUTO_CORRECT` returns to correction, invalidated proof, and re-review of the
-  same checkpoint.
-- `DEFER_FOLLOW_UP` is not a checkpoint result and is not permitted during a
-  checkpoint review.
-- `USER_DECISION` pauses for user adjudication.
-- `BLOCKED` pauses for the named authority, access, credential, skill, external
-  state, or prerequisite.
-- A finding routed `RESIDUAL_RISK` does not create an additional checkpoint result.
-  It permits a `CLEAN` result only when the governing issue explicitly
-  classifies the assumption as non-blocking and it does not weaken acceptance
-  or highest-risk proof. Otherwise the checkpoint result is `USER_DECISION`.
-
-Do not advance with an unresolved confirmed finding. Do not infer advancement
-authority from a durable goal, completion target, deadline, or general request
-to finish.
+After routing the review queue, the Delivery Operator assigns `CLEAN`,
+`AUTO_CORRECT`, `USER_DECISION`, or `BLOCKED`. `DEFER_FOLLOW_UP` is not
+permitted. `RESIDUAL_RISK` may coexist with `CLEAN` only when the issue makes
+the assumption non-blocking without weakening acceptance or highest-risk proof.
 
 ## Delivery Return Record
 
-Return the complete verified queue to the composing workflow only after normal
-discovery, deduplication, and verification finish. For every result include:
+After discovery, deduplication, and verification finish, return every result:
 
 ```text
 finding_id
 verdict
-route
 checkpoint_id_when_applicable
 review_base_sha
 candidate_head_sha
-checkpoint_result_when_applicable
 file_and_line
 failure_scenario
 evidence
 suggested_correction
-route_rationale
+route_relevant_facts
 follow_up_issue_seed_when_applicable
 proof_invalidated_by_correction
 required_rereview_scope
 ```
 
-This delivery return may batch all `AUTO_CORRECT` items so the operator can
-apply one coherent correction batch and all `DEFER_FOLLOW_UP` items so the
-outer review-to-merge workflow can deduplicate them by root cause before issue
-creation. It overrides one-at-a-time presentation only for those explicitly
-authorized routes. Present `USER_DECISION` items through the composing
-workflow's user-decision discipline.
+The Delivery Operator augments records with `route`, `route_rationale`, and
+`checkpoint_result_when_applicable`, then may batch coherent corrections and
+deduplicate authorized follow-ups.
 
 ## Re-Review
 
-After any correction, review the resulting head rather than relying on the old
-verdict. Re-run affected proof, re-verify previous findings, inspect the full
-resulting diff for regressions, and preserve finding IDs across cycles. Assign
-new IDs only to genuinely new root causes.
-
-For checkpoint reviews, the re-reviewed candidate head must become the recorded
-accepted head before the next checkpoint begins. A review of an earlier
-candidate does not validate a corrected checkpoint.
-
-Checkpoint reviews do not replace the final full integration review.
-
-Do not declare the review loop clean until the current head has no unresolved
+After correction, review the resulting head, rerun affected proof, reassess
+prior findings, and inspect the full resulting diff. Preserve IDs for existing
+root causes. Checkpoint review never replaces final full integration review.
+Do not declare the loop clean until the current head has no unresolved
 `CONFIRMED` finding, every prior finding has a disposition, and every declared
 coverage or independence limitation is recorded.

@@ -24,8 +24,9 @@ Honor narrower user authorization and runtime permissions.
 
 This workflow replaces ordinary interactive finding adjudication and the
 `pull-request-review` issue-delivery handoff for clear in-scope corrections.
-The coordinator owns implementation and publication; independent reviewer
-agents remain read-only. Do not invoke ordinary review-to-merge handling.
+The active governing agent fulfills the Delivery Operator role and owns
+implementation and publication. Independent Reviewer contexts remain
+read-only. Do not invoke ordinary review-to-merge handling.
 Do not merge, approve or dismiss reviews, force-push, deploy, bypass branch
 protection, or perform unrelated cleanup. External mutations during runtime
 validation require existing authorization.
@@ -175,7 +176,7 @@ meaningful regression coverage when appropriate and run repository-required
 checks plus focused proof. Do not weaken tests, acceptance criteria, checks, or
 security controls. Distinguish executed proof from unavailable checks.
 
-Use a separate read-only reviewer agent with code-review against the complete
+Use a separate read-only Independent Reviewer context with code-review against the complete
 resulting base-to-candidate-head diff, not merely correction commits. Supply raw
 requirements, recorded decisions, prior finding IDs, current diff, proof, and
 limitations. Require independent verification, attempted refutation, prior-

@@ -1,6 +1,6 @@
 # eng-for-certainty
 
-This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `cac31bae36234645887efba319031899f0c0ac7b`.
+This repository is automatically synced from [seyofori/skills](https://github.com/seyofori/skills) at source commit `bf2571857cd68c6ba806317ed421e4e74c3c2cf3`.
 
 Do not edit this repository directly. Make changes in `seyofori/skills` and let the sync workflow publish them here.
 
@@ -30,6 +30,16 @@ replace stale local `deliver-issue` installations.
 - `grill-me`
 - `grill-with-docs`
 
+## Portable agent roles
+
+These skills define four portable responsibilities: Planning Agent,
+Delivery Operator, Implementation Worker, and Independent Reviewer.
+The active harness chooses the concrete agents, models, providers,
+permissions, tools, runtimes, and isolation outside the shared skill
+text. When delegation is unavailable, the primary agent may perform
+safe planning, delivery, and implementation roles in sequence. A
+same-context self-review never satisfies an independent-review gate.
+
 ## Automated issue delivery
 
 ### 1. Prepare and approve the issue
@@ -46,20 +56,23 @@ selected slice's declared worktree after approval, writes and commits
 the final issue there, and hands that same context to `issue-delivery`.
 Backlog-only review does not create an idle implementation worktree.
 
-### 2. Let the delivery operator run
+### 2. Let the Delivery Operator run
 
 Invoke `issue-delivery` with the approved issue. It reuses the
 `issue-review` worktree for immediate delivery, or creates the
 backlog issue's declared worktree from a verified base containing the
 approved issue commit. It never starts implementation on a second
-branch. Use a durable goal when delivery should continue across turns:
-
-`/goal Use $issue-delivery to deliver <issue path> to a ready-to-merge handoff.`
+branch.
 
 `issue-delivery` coordinates implementation, checkpoint validation,
-independent review, authorized corrections, revalidation, final
+bounded Implementation Worker assignments, independent review,
+authorized corrections, revalidation, final
 integration review, pull-request creation or update, and CI
 follow-through.
+
+When the active harness supports durable goals, configure one through
+that harness for work that should continue across turns. A durable
+goal adds persistence, not authority.
 
 Confirmed deterministic in-scope findings may be corrected and
 re-reviewed automatically. The operator stops when only human

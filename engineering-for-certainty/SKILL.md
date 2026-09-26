@@ -51,6 +51,22 @@ Classify unresolved inputs before acting:
 - **User-owned decision**: present concrete options, tradeoffs, and a recommendation; wait when the choice would materially change behavior, architecture, scope, or product meaning.
 - **Empirical unknown**: use a bounded reproduction, test, spike, benchmark, or research pass. Do not ask the user to guess what evidence can establish.
 
+## Portable Agent Roles
+
+Use the canonical **Planning Agent**, **Delivery Operator**, **Implementation
+Worker**, and **Independent Reviewer** contracts from the repository's shared
+engineering context. Shared skills define responsibilities, authority, evidence,
+and transitions. The active harness separately resolves each role to a concrete
+agent, provider, model, reasoning effort, permissions, tool access, runtime, and
+context-isolation mode.
+
+Do not place concrete role mappings, model identifiers, provider-specific agent
+configuration, or collaboration-tool syntax in shared skills. Do not assume
+that subagents exist, can interact with the user, share permissions, or can
+safely write to one worktree concurrently. A general-purpose agent may fill an
+unmapped role only when it satisfies that role's complete authority,
+independence, permission, and validation contract.
+
 ## Preferred Defaults
 
 - Language: TypeScript.
@@ -155,7 +171,8 @@ Use explicit version-control semantics so project history communicates intent an
 - Align branch type with the dominant intent: `feat/`, `fix/`, `docs/`, `refactor/`, `test/`, `build/`, `ci/`, `perf/`, `chore/`, or `release/`.
 - Keep branch names short, lowercase, and kebab-case. Include a ticket or issue key only when the repo uses one, such as `fix/pm-123-token-expiry`.
 - When a change mixes unrelated intents, split the work instead of using a vague branch such as `misc` or `updates`.
-- For Codex-created branches, preserve the platform-required prefix when present, then apply the conventional name after it, such as `codex/fix/token-expiry`.
+- When the active platform requires a branch prefix, preserve it and apply the
+  conventional branch name after it.
 
 ### Worktree Isolation
 

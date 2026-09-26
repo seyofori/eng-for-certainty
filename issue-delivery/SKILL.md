@@ -1,14 +1,15 @@
 ---
 name: issue-delivery
-description: Deliver an approved, implementation-ready issue through implementation, issue-owned validation, independent code review, authorized correction loops, pull-request creation, and CI to a ready-to-merge handoff. Use when the user asks an agent to act as the delivery operator for a canonical issue, carry an issue through the complete build-review-PR-CI flow, or continue until only human approval and merge remain.
+description: Deliver an approved, implementation-ready issue through implementation, issue-owned validation, independent code review, authorized correction loops, pull-request creation, and CI to a ready-to-merge handoff. Use when the user asks an agent to act as the Delivery Operator for a canonical issue, carry an issue through the complete build-review-PR-CI flow, or continue until only human approval and merge remain.
 ---
 
 # Issue Delivery
 
-Act as the delivery operator for one approved Smallest Coherent Slice. Coordinate
-the engineering skills and repository tools that own each stage. Do not absorb
+Act as the **Delivery Operator** for one approved Smallest Coherent Slice.
+Coordinate the engineering skills and repository tools that own each stage. You
+remain accountable for the final result when work is delegated. Do not absorb
 their doctrine, weaken their gates, or let an implementation context serve as
-its own independent reviewer.
+its own **Independent Reviewer**.
 
 ## Required Input And Skills
 
@@ -75,6 +76,17 @@ review coordination, mechanical correction loop, branch publication,
 pull-request creation or update, and CI repair needed to reach the completion
 condition.
 
+Honor a narrower explicit publication boundary in the governing issue or user
+request. It may stop delivery after local implementation, validation, and
+independent review; never convert that boundary into permission to push, open a
+pull request, or claim a Ready-to-Merge Handoff.
+
+Resolve one effective publication boundary from the governing issue and the
+user's explicit instructions, with the narrower boundary controlling. A source
+that disables publication may also define a local completion target. When it
+does not, stop before publication and report delivery as incomplete with
+publication pending; do not invent a local completion condition.
+
 It does not authorize changing product intent, acceptance criteria,
 architecture, public contracts, schemas, migrations, permissions, security
 policy, dependencies, or scope without the decision required by the issue's
@@ -103,7 +115,11 @@ When a goal is active:
   head is revalidated and re-reviewed;
 - pause and yield on `USER_DECISION` or `BLOCKED`, leaving the goal incomplete;
 - do not cross a checkpoint with an unresolved confirmed finding; and
-- mark the goal complete only at the ready-to-merge completion condition.
+- mark the goal complete only at the completion condition declared by the
+  governing issue or explicit user instruction. The default is Ready to Merge;
+  an explicit narrower publication boundary may define a truthful local
+  completion target instead. A publication stop with no local completion target
+  leaves the goal incomplete.
 
 An active but incomplete goal may be waiting for the user or an external owner.
 It does not require the operator to keep acting when no authorized transition
@@ -157,6 +173,28 @@ steps.
 Follow only the current checkpoint's affected surface, guardrails, acceptance
 criteria, traceability rows, and required reading. Use TDD where required by
 `$engineering-for-certainty`.
+
+When the active harness provides a suitable **Implementation Worker**, give it
+one complete bounded assignment containing:
+
+- the approved behaviour and checkpoint identity;
+- exact files, symbols, and change boundaries;
+- owned acceptance criteria and traceability rows;
+- required validation and specialist proof;
+- allowed mechanical judgment and explicit escalation conditions; and
+- the required return record: changed files, validation evidence, failures,
+  deviations, and residual risk.
+
+Inspect the returned diff and evidence before accepting it or advancing. A
+worker does not own checkpoint advancement, finding routing, integration,
+publication, merge, or deployment. If no suitable worker is available, perform
+the checkpoint in the Delivery Operator context while preserving the complete
+Implementation Worker contract.
+
+Only one Implementation Worker may write to a shared implementation worktree at
+a time. Parallel writers require explicit disjoint ownership, isolated
+worktrees, and the issue's named Git integration strategy. Read-only exploration
+and review may run in parallel when their workstreams are genuinely independent.
 
 Classify discoveries before acting:
 
@@ -217,7 +255,12 @@ stale. Tie every runtime result to the exact local commit or deployed build.
 
 Invoke `$code-review` against the complete issue-base-to-current-head diff and
 the canonical issue. Use the issue's requested review effort, or let
-`$code-review` derive it from risk. Keep every finder and verifier read-only.
+`$code-review` derive it from risk. Use an **Independent Reviewer** context that
+did not implement the candidate, and keep every finder and verifier read-only.
+If the active harness cannot establish a fresh review context, run any safe
+separated self-review only as supplemental evidence, report the limitation, and
+return `BLOCKED` for the independent-review gate rather than claiming that an
+independent review occurred.
 
 Review all changed surfaces and interactions across checkpoint boundaries,
 including shared contracts, configuration, deleted behavior, and integration
@@ -235,7 +278,9 @@ other independent findings are still being discovered.
 
 ### 5. Route Findings And Correct The Change
 
-Route every verified review result through the issue's Review Loop Contract:
+The Independent Reviewer owns evidence-based verdicts. As Delivery Operator,
+inspect that evidence and own the final workflow route and checkpoint advance
+decision under the issue's Review Loop Contract:
 
 - **AUTO_CORRECT**: apply the smallest correction when the finding is
   confirmed, fully inside approved scope, has one clear interpretation, and
@@ -295,6 +340,15 @@ pending.
 
 ### 8. Create Or Update The Pull Request
 
+If the effective publication boundary from the governing issue or explicit user
+instruction disables publication, commit the local completion evidence and
+obtain an Independent Reviewer audit of the current head and written record. If
+that same source defines a local completion target, apply the narrower
+Completion Condition below. Otherwise return an incomplete handoff at the
+publication gate. In either case, report every unperformed publication step as
+pending separate authorization, stop, and do not invoke
+`$pull-request-creation` or continue into steps 9-10.
+
 Invoke `$pull-request-creation`. Let it verify the Branch Contract, evidence,
 intentional commits, push, PR body, stack position, and remote state. Do not
 bypass a publication stop condition from inside this composing skill.
@@ -341,7 +395,7 @@ Declare delivery complete only when:
 
 - every defined checkpoint has a recorded accepted head and clean advance
   decision;
-- the current PR head satisfies every approved acceptance criterion;
+- the current candidate satisfies every approved acceptance criterion;
 - every issue-owned validation and highest-risk verification gate has evidence;
 - every required issue-owned Runtime Acceptance scenario passed against the
   exact current candidate, and every post-merge-only pass is linked as a
@@ -353,13 +407,20 @@ Declare delivery complete only when:
   the recorded behavior-changing head are verified evidence-only descendants;
 - every confirmed finding has a recorded disposition and no unresolved blocker
   remains;
-- the pull request truthfully describes and points to the current head;
-- every required automated CI check for that head is green;
 - the Issue Completion Record and linked status surfaces are current; and
-- only human approval and the merge action remain.
+- one of these publication conditions is satisfied:
+  - **Default Ready to Merge:** the pull request truthfully describes and points
+    to the current head, every required automated CI check for that head is
+    green, and only human approval and the merge action remain; or
+  - **Explicit narrower boundary:** the governing issue or explicit user
+    instruction defines a local completion target; that target is satisfied;
+    the current local head and completion record have passed independent
+    review; publication is reported as pending; and the workflow does not claim
+    Ready to Merge.
 
 Branch creation, implementation completion, a green local test run, one review
-pass, PR creation, a push, or CI start is progress, not completion.
+pass, PR creation, a push, or CI start is progress, not completion unless the
+complete governing condition above is satisfied.
 
 ## Pause Handoff
 

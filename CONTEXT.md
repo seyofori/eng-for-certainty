@@ -99,13 +99,53 @@ integrity, and classifies discrepancies before any implementation mismatch
 enters the normal finding queue.
 _Avoid_: Implementer screenshot summary, subjective redesign, snapshot-test-only review
 
+**Planning Agent**:
+The agent role that investigates a request and prepares an implementation-ready
+issue. It resolves discoverable facts, scope, acceptance criteria, change
+boundaries, dependencies, and validation; identifies user-owned decisions; and
+keeps interactive questions in the user-facing agent. A delegated Planning
+Agent returns required questions instead of guessing or attempting indirect
+user interaction.
+_Avoid_: Product decision-maker, provider-specific planner, inaccessible interviewer
+
 **Delivery Operator**:
-The composing workflow implemented by `$issue-delivery` that carries one
-approved issue through implementation, issue-owned validation, independent code
-review, authorized correction loops, pull-request creation, and CI follow-up.
-It coordinates the owning skills without turning reviewer contexts into editors
-or choosing user-owned product and architectural decisions.
+The agent role active in `$issue-delivery` that carries one approved issue
+through implementation, issue-owned validation, independent code review,
+authorized correction loops, pull-request creation, and CI follow-up. It
+sequences checkpoints, supplies complete bounded assignments, inspects results
+before advancing, and remains accountable when implementation is delegated. It
+does not turn reviewer contexts into editors or choose user-owned product and
+architectural decisions.
 _Avoid_: Autonomous product owner, code reviewer, merge bot
+
+**Implementation Worker**:
+The agent role that implements one bounded checkpoint or assignment. It
+receives the approved behaviour, exact change boundary, acceptance criteria,
+required validation, expected return evidence, and escalation conditions. It
+does not independently change product meaning, architecture, public contracts,
+schemas, migrations, dependencies, permissions, security policy, or test
+strategy; broaden scope; create unrelated follow-up work; merge; deploy; or
+publish. It returns the changed files, validation evidence, failures,
+deviations, and residual risk to the **Delivery Operator**.
+_Avoid_: Unbounded implementer, independent product owner, integration owner
+
+**Independent Reviewer**:
+The read-only agent role that reviews a frozen checkpoint or integrated change
+from a fresh context that did not implement it. It receives the approved issue,
+raw change, validation evidence, and review range without the implementer's
+expected verdict, then owns evidence-based review verdicts. It does not edit the
+candidate or correct its own findings. The **Delivery Operator** owns finding
+routing and checkpoint advancement under the **Review Loop Contract**.
+_Avoid_: Self-review, reviewer-owned correction, implementer summary
+
+**Agent Role Resolution**:
+The active harness's mapping from a portable role to a concrete agent, provider,
+model, reasoning effort, permissions, tool access, foreground or background
+execution, runtime, and context inheritance or isolation. Shared skills define
+role responsibilities and never contain concrete mappings. A general-purpose
+agent may fill an unmapped role only when it satisfies the complete role
+contract.
+_Avoid_: Model mapping in a shared skill, cheapest-agent inference, implicit permissions
 
 **Review Loop Contract**:
 The issue-owned authority and stopping contract that separates automatic
@@ -141,8 +181,7 @@ _Avoid_: PR opened, ready for review, merged, deployed
 
 **Code Review**:
 Platform-neutral analysis that verifies candidate defects and reports confirmed findings without external writes by default.
-_Alias_: `code-review-dexwin` on the engineering server
-_Avoid_: PR review, separate Dexwin review doctrine
+_Avoid_: PR review, provider-specific review doctrine
 
 **Style and Clarity Pass**:
 A required **Code Review** finder angle that evaluates whether changed code communicates its purpose and safe change path clearly enough to prevent credible maintenance or misuse risk.
@@ -335,6 +374,24 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 
 ## Relationships
 
+- `$issue-review`'s active governing agent is the **Planning Agent**. Bounded
+  non-interactive investigation may be delegated when the active harness
+  supports it, but interactive decisions stay in the user-facing context.
+- `$issue-delivery`'s active governing agent is the **Delivery Operator**. It may
+  act as the **Implementation Worker** when delegation is unavailable, but it
+  preserves the worker's scope and escalation boundaries.
+- A shared implementation worktree has at most one active writer. Parallel
+  **Implementation Workers** require explicit disjoint ownership, filesystem
+  isolation, and a named integration strategy. Independent read-only work may
+  run concurrently when its workstreams are genuinely separate.
+- An **Independent Reviewer** requires a fresh context that did not implement
+  the candidate. A separated self-review may add evidence but does not pass the
+  independent-review gate; the workflow records the limitation and remains
+  unverified until independent review is available.
+- Missing subagents or an absent role mapping never weakens issue scope,
+  user-decision, validation, correction, or escalation boundaries. The primary
+  agent continues safely through the roles it can satisfy and stops at any role
+  whose complete contract it cannot meet.
 - A parent issue contains one or more ordered **Smallest Coherent Slices** when the work cannot remain one coherent issue.
 - Each **Smallest Coherent Slice** owns one **Branch Contract** and one pull
   request. A parent issue pack does not collapse its child slices into one
@@ -585,9 +642,11 @@ _Avoid_: Explicitly requested re-review, outdated-line cleanup
 - "Ready to merge" implied that human approval had already happened - resolved:
   a **Ready-to-Merge Handoff** ends immediately before human approval and the
   merge action.
-- `code-review-dexwin` appeared to name a separate skill - resolved: it is the engineering server alias for **Code Review**, not an independent review contract.
 - "Stacked" was used as a synonym for parallel issue work - resolved: a **Stacked Pull Request** has an explicit dependency, while independent pull requests share the canonical base.
-- "Clean subagent" was used as a worktree requirement - resolved: a reviewer needs a **Clean Review Context**, which does not itself require a worktree; implementation still defaults to one **Implementation Worktree** per **Branch Contract**.
+- "Clean subagent" was used as a worktree requirement - resolved: an
+  **Independent Reviewer** needs a **Clean Review Context**, which does not
+  itself require a worktree; implementation still defaults to one
+  **Implementation Worktree** per **Branch Contract**.
 - "Final worktree" was used as though worktrees themselves are merged - resolved: commits from **Helper Branches** are integrated into the **Canonical Integration Branch**; files are never copied between worktrees as the integration mechanism.
 - "Draft PR" was treated as the default publication result - resolved: **Pull Request Readiness** determines the state, and verified completed work produces a pull request ready for review.
 - `pending-review` was treated as a formal workflow-status category - resolved: **Pending Review** is a reviewer-attention signal applied after corrections and evidence are ready for another look.

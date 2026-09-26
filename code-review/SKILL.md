@@ -7,15 +7,29 @@ description: Perform evidence-verified, staff-level code reviews for diffs, pull
 
 ## Objective
 
+Act as the **Independent Reviewer** for the assigned review. The review context
+must be read-only and, when the governing workflow requires independence, must
+not be the context that implemented the candidate.
+
 Find material engineering risks with high recall, then independently refute or verify every candidate before reporting it. Prioritize correctness, security, data integrity, reliability, and operational safety; treat material style and clarity risks as a required review angle, not aesthetic feedback. Keep ordinary reviews read-only.
 
-Treat review assurance and execution mechanism as separate concerns. Low, Medium, High, and Max describe the required depth and assurance. Workflow orchestration, parallel subagents, sequential clean contexts, and separated coordinator passes describe how that assurance is pursued.
+Treat review assurance and execution mechanism as separate concerns. Low,
+Medium, High, and Max describe the required depth and assurance. Managed
+orchestration, parallel isolated review contexts, sequential clean contexts,
+and separated passes inside one Independent Reviewer context describe how that
+assurance is pursued.
 
 Treat parallelism as an execution technique, not as a review angle. Use logically independent finder and verifier contexts when the runtime supports them and the review surface provides useful independent work packets. Scale finder count by effective diff size, risk, and change topology rather than creating one worker per review angle.
 
 Keep finder prompts independent. Give each finder raw artifacts, governing contracts, and a bounded review surface without other finders' conclusions. Give verifiers a normalized candidate claim and raw evidence without the finder's preferred verdict.
 
-Use the most suitable permitted execution mechanism for the specific review. Do not require Workflow when ordinary subagents or clean sequential contexts can satisfy the review obligations. Degrade gracefully when an execution mechanism is unavailable while preserving the requested review depth as far as the runtime reasonably permits. Record any limitation that materially reduces context independence, coverage, or verification confidence.
+Use the most suitable permitted execution mechanism for the specific review.
+Read and follow [Review Execution](references/review-execution.md) when selecting
+or delegating review contexts. Degrade gracefully when a mechanism is
+unavailable while preserving the requested review depth as far as the runtime
+reasonably permits. Record any limitation that materially reduces context
+independence, coverage, or verification confidence. A separated pass in the
+implementation context is never independent review.
 
 ## Required Engineering Doctrine
 
@@ -60,7 +74,9 @@ Run the review as six distinct phases:
 2. Find candidate issues through independent review angles, including style and clarity.
 3. Normalize and deduplicate candidates by root cause.
 4. Verify every survivor and run targeted validation where useful.
-5. Rank confirmed findings into one review queue and work through one finding at a time, or return the routed queue to an authorized composing delivery workflow, then report residual risks and open questions.
+5. Rank confirmed findings into one review queue and work through one finding at
+   a time, or return the complete verdict queue to an authorized composing
+   delivery workflow, then report residual risks and open questions.
 6. After the user verifies the reported findings, analyze whether the governing issue or handoff could have prevented them and propose targeted `issue-review` skill improvements.
 
 ### Composing Delivery Mode
@@ -72,15 +88,14 @@ follow [Review Loop Contract](references/review-loop-contract.md) before Phase
 escalation authority.
 
 Keep every finder and verifier read-only. After completing the normal full
-discovery and verification pipeline, attach `AUTO_CORRECT`,
-`DEFER_FOLLOW_UP`, `USER_DECISION`, `BLOCKED`, or `RESIDUAL_RISK` routing to
-every non-refuted result and return the complete record to the composing
-workflow. Use `DEFER_FOLLOW_UP` only when the composing workflow explicitly
-authorizes durable follow-up creation and the finding satisfies the reference
-contract. This mode overrides the ordinary one-at-a-time presentation only for
-findings the composing workflow authorizes for automatic correction or durable
-follow-up capture; it does not weaken evidence, review independence, or user
-ownership of material decisions.
+discovery and verification pipeline, return the complete evidence-based verdict
+queue and route-relevant facts to the composing workflow. The Independent
+Reviewer owns verdicts; the **Delivery Operator** owns `AUTO_CORRECT`,
+`DEFER_FOLLOW_UP`, `USER_DECISION`, `BLOCKED`, or `RESIDUAL_RISK` routing and
+checkpoint advancement under the governing Review Loop Contract. This mode
+overrides ordinary one-at-a-time presentation only when the composing workflow
+has authority to process the complete queue; it does not weaken evidence,
+review independence, or user ownership of material decisions.
 
 ### Checkpoint Review Mode
 
@@ -88,8 +103,9 @@ When the composing delivery workflow identifies a review checkpoint, read and
 follow [Checkpoint Review](references/checkpoint-review.md) before Phase 0.
 
 Checkpoint Review Mode keeps the normal discovery, verification, deduplication,
-severity, independence, and routing standards. It changes only the declared
-review range and the checkpoint-specific return record.
+severity, and independence standards. It changes only the declared review range
+and checkpoint-specific return record; the Delivery Operator still owns route
+and advancement decisions.
 
 A checkpoint review must finish the complete candidate landscape for that
 checkpoint before returning findings. Do not alternate between discovering one
@@ -113,7 +129,10 @@ For an implicit local or branch review:
 6. Detect renames, submodules, generated files, lockfiles, migrations, and binary changes instead of silently excluding them.
 7. Record the selected base, head, working-tree inclusion, and reviewed file set. Explain an unexpectedly empty target.
 
-Do not fetch, pull, switch branches, or mutate repository state merely to gather a review unless the user authorized it.
+Do not fetch, pull, switch branches, or mutate repository state from the
+Independent Reviewer context. When the target must be prepared or refreshed,
+return that requirement to the composing workflow or Delivery Operator and
+review the frozen SHA it supplies.
 
 ### Recover intent and contracts
 
@@ -148,7 +167,9 @@ design authority.
 
 ### Read governing instructions
 
-Read every applicable `AGENTS.md`, `CLAUDE.md`, repository instruction, ancestor instruction, and relevant architecture or contribution document. For convention findings, cite the exact governing rule; do not report vibes-based style preferences.
+Read every applicable repository or ancestor agent-instruction file and relevant
+architecture or contribution document. For convention findings, cite the exact
+governing rule; do not report vibes-based style preferences.
 
 ### Choose review effort
 
@@ -175,35 +196,42 @@ Make review-planning decisions first:
 
 Then make execution-planning decisions:
 
-- Can ordinary parallel subagents execute the work packets effectively?
-- Would scripted Workflow orchestration materially improve coordination, isolation, latency, or context containment?
-- Is Workflow available and already permitted?
-- If permission or enablement is required, is the expected benefit large enough to justify involving the user?
-- Which fallback will preserve the review obligations if Workflow is not used?
+- Can parallel isolated review contexts execute the work packets effectively?
+- Would managed orchestration materially improve coordination, isolation,
+  latency, or context containment?
+- Can the active harness enforce read-only permissions and the required context
+  isolation?
+- If permission or enablement is required, is the expected benefit large enough
+  to justify involving the user?
+- Which fallback preserves the review obligations when the preferred mechanism
+  is unavailable?
 
 ### Choose the execution mechanism
 
 Support these execution mechanisms:
 
-1. Workflow-based orchestration when available, permitted, and materially useful.
-2. Parallel independent subagents.
+1. Managed orchestration when available, permitted, and materially useful.
+2. Parallel isolated review contexts.
 3. Sequential clean or isolated review contexts.
-4. Deliberately separated passes in the coordinator context.
+4. Deliberately separated passes inside one Independent Reviewer context.
 
-Do not assume Workflow is better merely because it is available. Prefer ordinary subagents when the review requires only a small number of independent workers and the coordinator can manage their results without material context pressure or latency.
+Do not assume managed orchestration is better merely because it is available.
+Prefer direct delegation when the review requires only a small number of
+independent work packets and the Independent Reviewer can manage their results
+without material context pressure or latency.
 
-Workflow is materially useful when one or more of these apply:
+Managed orchestration is materially useful when one or more of these apply:
 
-- the plan requires more independent workers than the coordinator can comfortably manage turn by turn;
+- the plan requires more independent review contexts than the Independent Reviewer can comfortably manage turn by turn;
 - the review has several coherent surfaces plus a second-stage verifier fan-out;
 - finder and verifier stages can be productively pipelined;
-- intermediate candidate and verification records would materially crowd the coordinator context;
+- intermediate candidate and verification records would materially crowd the Independent Reviewer context;
 - the same branching, deduplication, or retry pattern must run repeatedly;
 - the expected latency reduction or context isolation is substantial.
 
-A high-risk change alone does not require Workflow. A small high-risk change may be better served by two carefully scoped ordinary subagents.
-
-When running in Claude Code and considering Workflow or Agent orchestration, read [Claude Code Review Orchestration](references/claude-code-orchestration.md) and follow its permission, safety, and fallback rules.
+A high-risk change alone does not require managed orchestration. A small
+high-risk change may be better served by two carefully scoped isolated review
+contexts.
 
 ### Preserve requested assurance
 
@@ -409,13 +437,16 @@ Collapse candidates that share one root cause. Prefer one finding that names all
 
 Re-evaluate provisional severity after deduplication; broad impact may raise severity, while duplicated symptoms must not inflate it.
 
-Maintain one coordinator-owned candidate ledger. Normalize incoming candidates to the Candidate Standard and attach their finder packet and evidence source.
+Maintain one Independent Reviewer-owned candidate ledger. Normalize incoming candidates to the Candidate Standard and attach their finder packet and evidence source.
 
-Finders may return their strongest candidates before completing their whole packet. At High or Max effort, verification may begin while other finders are still working only after the coordinator has normalized the candidate and established a sufficiently stable root-cause claim.
+Finders may return their strongest candidates before completing their whole packet. At High or Max effort, verification may begin while other finders are still working only after the Independent Reviewer has normalized the candidate and established a sufficiently stable root-cause claim.
 
 Do not begin early verification for a candidate likely to merge with findings from another active packet. If later evidence changes, broadens, or merges the root-cause claim, discard the stale verification result and verify the final normalized claim again.
 
-The coordinator may reconsider Workflow once after candidate normalization when the discovered verifier fan-out is materially larger or more complex than the initial plan. Do not reconsider it after the user has declined it during the same review.
+The Independent Reviewer may reconsider managed orchestration once after
+candidate normalization when the discovered verifier fan-out is materially
+larger or more complex than the initial plan. Do not reconsider it after the
+user has declined it during the same review.
 
 Do not finalize the finding queue until every finder has completed, every changed surface has received its required coverage, and global deduplication is complete.
 
@@ -445,7 +476,7 @@ Route uncertainty before assigning `NEEDS_CONTEXT`:
 - **User-owned decision**: ask a numbered question that states the decision, impact, options, and recommendation. Keep it out of findings until answered.
 - **Empirical unknown**: run the narrowest safe targeted validation or investigation that can resolve it. Do not ask the user to guess runtime behavior.
 
-Only `CONFIRMED` candidates become normal findings. Place `CONDITIONAL` candidates under residual risk with their assumptions. If further evidence establishes reachability, reclassify the candidate as `CONFIRMED` before reporting it as a finding. Never report a finding solely because a subagent proposed it.
+Only `CONFIRMED` candidates become normal findings. Place `CONDITIONAL` candidates under residual risk with their assumptions. If further evidence establishes reachability, reclassify the candidate as `CONFIRMED` before reporting it as a finding. Never report a finding solely because a delegated review context proposed it.
 
 Prefer two independent evidence points for Critical or High findings when practical. One direct point is enough for mechanically provable failures such as a type error, missing export, failing command, unreachable path, or reproduced defect.
 
@@ -460,9 +491,12 @@ For Critical or High candidates, or candidates with material uncertainty, use a 
 
 Use a third verifier only when the first two materially disagree, rely on incompatible assumptions, or leave an important evidentiary gap.
 
-Do not determine verdicts by majority vote. Evidence outranks vote count. One direct reproduction may establish a defect; one cited guard may refute several unsupported confirmations. The coordinator must reconcile the evidence and assign the final verdict under the normal CONFIRMED, CONDITIONAL, REFUTED, and NEEDS_CONTEXT definitions.
+Do not determine verdicts by majority vote. Evidence outranks vote count. One direct reproduction may establish a defect; one cited guard may refute several unsupported confirmations. The Independent Reviewer must reconcile the evidence and assign the final verdict under the normal CONFIRMED, CONDITIONAL, REFUTED, and NEEDS_CONTEXT definitions.
 
-When subagents are unavailable, perform the same verifier roles as deliberately separate skeptical passes. Record the lack of clean-context independence as a review limitation.
+When delegated review contexts are unavailable, perform the same verifier work
+as deliberately separate skeptical passes. If the active context implemented
+the candidate, record that the review is not independent and return the missing
+independence as a blocking gate to the Delivery Operator.
 
 ### Targeted validation
 
@@ -545,15 +579,16 @@ Investigate, verify, deduplicate, and rank the complete finding set before prese
 Present one confirmed finding at a time in severity and impact order. Give it a stable ID and show `**Progress: Finding <position> of <total> - <remaining> remain after this**` on every response that presents or continues it. Calculate position as prior dispositions plus the current finding; calculate total as prior dispositions plus the current and queued findings. Do not show a remaining count alone; a percentage may appear only as secondary information. Keep discussing the current finding until the user accepts it as valid, rejects it, requests a revision, defers it, or asks for named evidence. Only then present the next finding, after recomputing the queue for dependencies, duplicates, or invalidated claims. If recomputation changes the total, state `**Queue revised: <old> -> <new>.** <reason>` before the next finding; never silently change the denominator or stable finding IDs. A generic request to review code is not a request for batching.
 
 In Composing Delivery Mode, use the reference contract's delivery return record
-instead. Complete the full queue before returning it, batch only
-`AUTO_CORRECT` findings for correction and `DEFER_FOLLOW_UP` findings for
-durable issue capture, and route material decisions back to the user without
-treating delivery authorization as adjudication.
+instead. Complete the full queue before returning it. Return verdicts,
+evidence, correction guidance, and route-relevant facts without selecting
+workflow routes or applying corrections. The Delivery Operator owns routing,
+correction, durable follow-up capture, and user escalation.
 
-In Checkpoint Review Mode, return the checkpoint result to the composing
-workflow using the checkpoint reference contract. A clean checkpoint result
-means only that the declared checkpoint range and integration seams satisfy the
-checkpoint gate. It is not a clean final review of the complete issue.
+In Checkpoint Review Mode, return the checkpoint review outcome using the
+checkpoint reference contract. The Delivery Operator derives the checkpoint
+result after routing the returned findings. A clean review outcome covers only
+the declared checkpoint range and integration seams; it is not a clean final
+review of the complete issue.
 
 Batch at most ten findings only when the user explicitly requests a batch or complete report. Preserve the same evidence for every item, allow adjudication by stable ID, and never treat a batch boundary as permission to omit Critical or High findings. There is no total finding cap.
 
@@ -576,10 +611,10 @@ Before presenting the first finding, confirm that:
   scope, or the missing proof is recorded as an explicit verification gap;
 - every candidate has exactly one final verdict;
 - no verifier result refers to a superseded pre-deduplication claim;
-- any Workflow decline or execution limitation is recorded once without weakening the evidence standard;
+- any managed-orchestration decline or execution limitation is recorded once without weakening the evidence standard;
 - the reported review effort distinguishes requested assurance from assurance actually achieved.
 
-Before delivering each finding or an explicitly requested batch, verify that the selected scope and effort are recorded, every candidate has exactly one verdict, every changed surface in scope was inspected, and all limitations and residual risks are classified. Keep the review read-only and perform no external writes unless the user explicitly requested them through a composing workflow.
+Before delivering each finding or an explicitly requested batch, verify that the selected scope and effort are recorded, every candidate has exactly one verdict, every changed surface in scope was inspected, and all limitations and residual risks are classified. Keep the Independent Reviewer read-only. A composing workflow performs any explicitly authorized external writes in its own context.
 
 Also verify that every directly affected companion area was identified and its
 skill loaded, and that doctrine observations passed the same materiality,
@@ -626,7 +661,9 @@ End with one of these explicit outcomes:
 - `Proposed issue-review improvements:` followed by the proposals, and ask the user whether to apply them.
 - `No issue-review update warranted.` followed by the evidence-bound reason.
 
-Never edit the `issue-review` skill during this retrospective unless the user separately authorizes the update.
+Never edit the `issue-review` skill from the Independent Reviewer context.
+Return any authorized update to a Planning Agent or Delivery Operator for
+mutation and validation.
 
 ## Comment and Fix Modes
 
@@ -634,8 +671,13 @@ Keep a normal review read-only.
 
 - For GitHub inline publication, use `$pull-request-review` as the composing workflow. This skill supplies verified findings and evidence; the composing workflow owns existing-thread reconciliation, user adjudication, responsible-engineer tagging, fix snippets, GitHub writes, and post-write verification.
 - When this skill is already running inside `$pull-request-review`, return stable finding IDs and complete candidate records to that workflow after verification. Do not load the composing skill from inside this skill or post comments directly.
-- When this skill is running inside `$issue-delivery`, follow the Review Loop Contract, return routed finding records, and leave every correction, commit, push, PR, and CI action to that composing workflow.
+- When this skill is running inside `$issue-delivery`, follow the Review Loop Contract, return verdicts and route-relevant facts, and leave routing, correction, commit, push, PR, and CI action to that composing workflow.
 - A direct request to review a GitHub PR and publish comments should select `$pull-request-review` before analysis. If it is unavailable, keep the review read-only and name the missing workflow instead of reconstructing GitHub mutation behavior here.
-- With an explicit fix request or `--fix`, present the review first, then begin a separate implementation phase. Do not auto-fix `CONDITIONAL` or `NEEDS_CONTEXT` candidates. Validate applied fixes and summarize the resulting changes.
+- With an explicit fix request or `--fix`, present the review first, then hand
+  the accepted correction to a Delivery Operator or bounded Implementation
+  Worker context. The Independent Reviewer does not perform the fix. Do not
+  auto-fix `CONDITIONAL` or `NEEDS_CONTEXT` candidates.
 
-Do not post externally or modify the working tree unless the user explicitly requested that action.
+Do not post externally or modify the working tree from the Independent Reviewer
+context. Return authorized actions and evidence to the composing workflow,
+Delivery Operator, or bounded Implementation Worker.

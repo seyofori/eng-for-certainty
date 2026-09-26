@@ -1,9 +1,11 @@
 # Review to Merge
 
 Use this mode only when the user explicitly asks to carry a resolved pull
-request through merge. Keep the contract model- and harness-agnostic: assign
-authority to reviewer, issue-review, delivery-operator, and pull-request
-coordinator roles rather than to a particular model or orchestration runtime.
+request through merge. Keep the contract model- and harness-agnostic. The
+Planning Agent prepares issue changes, the Delivery Operator owns workflow
+routes and mutations, Implementation Workers perform bounded assignments, and
+the Independent Reviewer owns evidence verdicts. The active harness resolves
+those roles to concrete execution contexts.
 
 ## Authorization
 
@@ -39,7 +41,8 @@ record file writes must occur inside that verified worktree. If the branch is
 checked out in an ambiguous or dirty shared checkout, belongs to another active
 worktree, cannot be fetched, or cannot receive pushes, stop before writing. An
 issue-review analysis may prepare a proposed coherent update before isolation
-exists, but the coordinator applies no file mutation until this gate passes.
+exists, but the Delivery Operator applies no file mutation until this gate
+passes.
 
 ## Route The Complete Queue
 
