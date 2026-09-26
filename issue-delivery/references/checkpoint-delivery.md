@@ -10,6 +10,7 @@ Load only the checkpoint's required operating set:
 - the current checkpoint row;
 - its owned acceptance criteria and traceability rows;
 - its production and test surfaces;
+- its triggered specialist passes and the proof each pass owns;
 - every appendix explicitly required by that checkpoint;
 - prior accepted checkpoint heads and unresolved residual risks; and
 - the governing Review Loop Contract.
@@ -21,8 +22,11 @@ Do not treat earlier implementation summaries as substitutes for these sources.
 For each checkpoint:
 
 1. Implement only the current checkpoint's approved behavior and surfaces.
-2. Run its exact validation and the repository gates needed to leave the branch
-   green.
+2. Run its exact validation, delivery-owned specialist passes and proof, and the
+   repository gates needed to leave the branch green. For design-backed work,
+   run the checkpoint scope defined by
+   [`$engineering-frontend`'s Design Conformance And
+   Audit](../../engineering-frontend/references/design-conformance.md).
 3. Create a coherent local checkpoint commit under the repository's history
    conventions and freeze its candidate head SHA.
 4. Invoke `$code-review` in Checkpoint Review Mode.
@@ -35,8 +39,8 @@ For each checkpoint:
 8. Route every result through the Review Loop Contract.
 9. Apply one coherent batch of independent `AUTO_CORRECT` findings where
    practical.
-10. Re-run invalidated proof, freeze the corrected head, and re-review the same
-    checkpoint.
+10. Re-run invalidated validation and specialist proof, freeze the corrected
+    head, and re-review the same checkpoint.
 11. Record the accepted head SHA only when the checkpoint passes its advance
     rule.
 12. Begin the next checkpoint from that accepted head.
@@ -47,6 +51,8 @@ Advance only when:
 
 - the reviewed candidate and accepted head are the same;
 - all checkpoint-owned traceability rows have evidence;
+- every triggered specialist pass has current evidence, an outcome, and any
+  limitation recorded;
 - no unresolved confirmed finding remains;
 - every prior checkpoint finding has a disposition;
 - correction-invalidated proof has been re-run; and

@@ -246,7 +246,9 @@ Treat every observation as a candidate, not a finding. Run each relevant angle i
 
 ### Plan finder work packets
 
-Treat Angles A-L as coverage obligations, not worker identities. Build a work packet map before starting finders.
+Treat the finder angles as coverage obligations, not worker identities. Apply
+conditional angles only when their trigger exists, and build a work packet map
+before starting finders.
 
 Prefer these packet types:
 
@@ -255,8 +257,10 @@ Prefer these packet types:
 - **Triggered specialist passes**: security, data integrity, resilience, observability, frontend, or performance when the changed surface activates that doctrine.
 - **Design-audit specialist packet**: for design-backed frontend work, inspect
   the authoritative source and approved baseline, detect relevant design drift,
-  run the complete issue-owned state-and-viewport matrix against the exact
-  running candidate, and classify every row before queue finalization.
+  run the applicable state-and-viewport matrix scope against the exact running
+  candidate, and classify every required row before queue finalization. Use the
+  checkpoint scope in Checkpoint Review Mode and the complete issue matrix for
+  the final integration review or an ordinary full review.
 - **Style and clarity pass**: validation contracts, named and visible data flow, control flow, comments, and consistency within the changed concern.
 - **Global consistency pass**: reuse, simplification, sibling behavior, architectural ownership, and cross-shard invariants.
 
@@ -362,8 +366,10 @@ procedure.
   implementation.
 - Inspect the running exact candidate, not only screenshots, generated
   HTML/Tailwind, component harnesses, or the implementer's summary.
-- Complete the entire Design Audit Matrix, including affected shared-component,
-  token, asset, responsive-rule, and integration-seam coverage.
+- Complete the applicable Design Audit Matrix scope, including affected shared-
+  component, token, asset, responsive-rule, and integration-seam coverage. In
+  Checkpoint Review Mode, use the checkpoint-owned and risk-expanded scope from
+  the canonical procedure; otherwise audit the complete issue matrix.
 - Treat accessibility, required operational states, design-system contracts,
   and platform conventions as engineering integrity, not subjective redesign.
 - Give each row one typed outcome. Only a verified, reachable, material
@@ -371,9 +377,9 @@ procedure.
   design conflict, missing evidence, and reference-export defects according to
   the reference instead of misreporting them as code defects.
 - At High or Max effort, use an independent verifier to repeat the complete
-  matrix, including rows initially marked conformant. Broad design-system,
-  global-token, or responsive-rule changes default to High design-audit effort
-  unless repository evidence safely bounds their impact.
+  applicable audit scope, including rows initially marked conformant. Broad
+  design-system, global-token, or responsive-rule changes default to High
+  design-audit effort unless repository evidence safely bounds their impact.
 
 ## Candidate Standard
 
@@ -566,8 +572,8 @@ and anything still unverified.
 Before presenting the first finding, confirm that:
 
 - every planned finder packet completed or has a recorded fallback;
-- every triggered Design Audit completed and classified its full matrix, or the
-  missing proof is recorded as an explicit verification gap;
+- every triggered Design Audit completed and classified its required matrix
+  scope, or the missing proof is recorded as an explicit verification gap;
 - every candidate has exactly one final verdict;
 - no verifier result refers to a superseded pre-deduplication claim;
 - any Workflow decline or execution limitation is recorded once without weakening the evidence standard;

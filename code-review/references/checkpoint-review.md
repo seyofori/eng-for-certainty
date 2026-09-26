@@ -14,6 +14,9 @@ Require:
 - frozen candidate head SHA;
 - checkpoint-owned acceptance and traceability rows;
 - changed production and test surfaces;
+- checkpoint-owned triggered specialist passes, including each pass's owned
+  proof, available evidence, and known limitations;
+- checkpoint-owned Design Audit Matrix rows when design conformance applies;
 - required issue sections or appendices; and
 - the governing Review Loop Contract.
 
@@ -35,6 +38,19 @@ and validation evidence reviewed.
 
 Do not review a moving target. If the candidate head changes during review,
 discard stale conclusions and restart against the new frozen head.
+
+Treat the checkpoint's specialist-pass list as required input, not as a ceiling.
+If the changed surface triggers an omitted companion or specialist pass, record
+the planning discrepancy and activate the pass. Do not return `CLEAN` until its
+required proof exists and the checkpoint contract truthfully records it.
+
+For design-backed work, follow
+[`$engineering-frontend`'s Design Conformance And
+Audit](../../engineering-frontend/references/design-conformance.md). Audit the
+current checkpoint's owned rows, affected earlier rows, and integration seams.
+Expand to the complete implemented-to-date matrix when the impact cannot be
+bounded safely. The final integration review still audits the complete issue
+matrix.
 
 ## Review Standard
 
@@ -63,6 +79,8 @@ reviewed_files
 integration_seams_checked
 owned_criteria_and_traceability_rows
 validation_evidence
+triggered_specialist_pass_records
+design_audit_scope_and_outcomes_when_applicable
 finding_records
 residual_risks
 coverage_or_independence_limitations
@@ -89,10 +107,18 @@ writes; use `USER_DECISION` when such a route is proposed at a checkpoint.
 - no unresolved `CONFIRMED` finding;
 - complete disposition of prior checkpoint findings;
 - evidence for checkpoint-owned proof;
+- current evidence and a classified outcome for every triggered specialist
+  pass, with every limitation recorded;
+- complete current design-audit evidence for the required checkpoint scope when
+  design conformance applies;
 - no stale review result from an earlier head; and
 - every residual risk handled by the governing issue's advance rule.
 
 A durable goal cannot change the checkpoint result or finding routes.
+
+The specialist-pass record does not replace the normal code-review angles with
+a checklist. The reviewer still plans and completes the normal finder packets,
+verification, deduplication, and routing required by `$code-review`.
 
 ## Final Integration Boundary
 

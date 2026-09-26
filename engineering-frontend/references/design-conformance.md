@@ -156,9 +156,9 @@ material in the evidence bundle.
 Create a matrix before implementation and keep it current when the approved
 issue changes:
 
-| Reference | Runtime state | Platform | Viewport | Interaction | Evidence | Result |
-|---|---|---|---|---|---|---|
-| `<node + artifact>` | `<state>` | `<platform>` | `<width x height>` | `<action>` | `<links>` | `<outcome>` |
+| Reference | Runtime state | Platform | Viewport | Interaction | Checkpoint | Evidence | Result |
+|---|---|---|---|---|---|---|---|
+| `<node + artifact>` | `<state>` | `<platform>` | `<width x height>` | `<action>` | `<checkpoint ID or final integration>` | `<links>` | `<outcome>` |
 
 Coverage must include:
 
@@ -181,6 +181,30 @@ Every row ends as `CONFORMANT`, `APPROVED_DEVIATION`,
 `IMPLEMENTATION_MISMATCH`, `DESIGN_DRIFT`, `DESIGN_CONFLICT`, `EVIDENCE_GAP`,
 `REFERENCE_EXPORT_DEFECT`, or `NOT_APPLICABLE`. A `NOT_APPLICABLE` row requires
 a concrete reason.
+
+### Checkpoint ownership
+
+When the issue uses review checkpoints, assign each matrix row to the earliest
+checkpoint where its runtime state is reachable and behaviour-complete through
+the running application. Use the real adapter, or an explicitly approved mock
+adapter whose integration blind spot and later literal gate are recorded.
+Component harnesses, static renders, and screenshots may provide earlier
+feedback, but they do not satisfy the checkpoint's Design Conformance Pass by
+themselves.
+
+At a checkpoint, the Design Conformance Pass and independent Design Audit cover:
+
+- every row owned by the current checkpoint;
+- every earlier accepted row invalidated or reasonably affected by the current
+  change; and
+- the integration seams where the current surface meets earlier accepted UI.
+
+Expand to the complete implemented-to-date matrix when shared components,
+tokens, variables, assets, fonts, layout primitives, or responsive rules make
+the impact unsafe to bound. Do not classify a future, unimplemented row as
+`NOT_APPLICABLE` or `EVIDENCE_GAP` merely because its assigned checkpoint has
+not started. The final integration review always audits the complete issue
+matrix.
 
 ## Execute The Comparison
 
@@ -279,12 +303,16 @@ audit specialist packet and use at least Medium review effort for the affected
 surface. The reviewer must inspect the source and running implementation;
 implementer summaries and screenshots alone are insufficient.
 
-- Complete and classify the whole Design Audit Matrix before finalizing the
-  finding queue.
+- In Checkpoint Review Mode, complete and classify the checkpoint-owned,
+  affected earlier, and integration-seam rows defined under Checkpoint
+  ownership. Expand to the complete implemented-to-date matrix when the impact
+  cannot be bounded safely.
+- Outside Checkpoint Review Mode, complete and classify the whole Design Audit
+  Matrix before finalizing the finding queue.
 - Give every candidate the normal independent skeptical verification.
 - At High or Max effort, have an independent verifier repeat the complete
-  matrix, including rows the first pass marked conformant, rather than checking
-  only suspected mismatches.
+  applicable audit scope, including rows the first pass marked conformant,
+  rather than checking only suspected mismatches.
 - Treat broad shared-component, design-system, global-token, or responsive-rule
   changes as High design-audit risk unless repository evidence safely bounds
   their impact.
